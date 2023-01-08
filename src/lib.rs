@@ -1,4 +1,4 @@
-#![doc(html_logo_url = "https://github.com/onlivfe/vrc_rs/raw/logo.png")]
+#![doc(html_logo_url = "https://github.com/onlivfe/vrc_rs/raw/main/logo.png")]
 //! Typed models for VRChat's API.
 //!
 //! This is fully work in progress, and published to be able to already setup the dependencies for [onlivfe](https://onlivfe.com).
