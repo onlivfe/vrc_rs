@@ -1,0 +1,49 @@
+[package]
+name = "vrc"
+version = "0.0.0-alpha.0"
+edition = "2021"
+license = "MPL-2.0"
+authors = ["ljoonal"]
+description = "Unofficial rust types of VRChat's API"
+repository = "https://github.com/onlivfe/vrc_rs"
+documentation = "https://docs.rs/vrc"
+keywords = ["vrc", "vrchat", "api", "rest"]
+categories = ["api-bindings", "games"]
+
+include = ["src", "Cargo.toml", "LICENSE", "README.md"]
+
+[badges]
+maintenance = { status = "experimental" }
+
+[lib]
+name = "vrc"
+path = "src/lib.rs"
+
+[features]
+
+default = []
+api_client = ["reqwest", "governor"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_with = { version = "2.1", features = ["time_0_3"] }
+time = { version = "0.3", default-features = false, features = [
+	"serde-well-known",
+] }
+serde_json = { version = "1" }
+strum = { version = "0.24", features = ["derive"] }
+
+# API client
+governor = { version = "0.5", optional = true }
+[dependencies.reqwest]
+optional = true
+version = "0.11"
+default-features = false
+features = ["json", "rustls-tls"]
+
+[dev-dependencies]
+tokio-test = "0.4.2"
+
+[package.metadata.docs.rs]
+features = ["api_client"]
+rustdoc-args = ["--cfg", "nightly"]
