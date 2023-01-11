@@ -2,7 +2,7 @@
 
 <img align="right" width="256" height="256" src="https://github.com/onlivfe/vrc_rs/raw/main/logo.png"/>
 
-[![License](https://img.shields.io/crates/l/chilloutvr.svg)](https://github.com/onlivfe/vrc_rs/src/LICENSE)
+[![License](https://img.shields.io/crates/l/vrc.svg)](https://github.com/onlivfe/vrc_rs/src/LICENSE)
 [![Crates.io](https://img.shields.io/crates/v/vrc.svg)](https://crates.io/crates/vrc)
 [![Docs](https://docs.rs/vrc/badge.svg)](https://docs.rs/crate/vrc/)
 
@@ -18,4 +18,3 @@ I disliked the generated nature of it though, and wanted more strong Rust-like t
 ## License
 
 Note that the license is `MPL-2.0` instead of the more common `MIT OR Apache-2.0`.
-A license change however can be negotiated if the ABI team wants to use this crate or adopt this crate into a more official one with a different license.
