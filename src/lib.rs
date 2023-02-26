@@ -25,9 +25,9 @@
 // My project my choice, tabs are literally made for indentation, spaces not.
 #![allow(clippy::tabs_in_doc_comments)]
 
+pub mod id;
 pub mod model;
 pub mod query;
-pub mod id;
 
 #[cfg(feature = "api_client")]
 #[cfg_attr(nightly, doc(cfg(feature = "api_client")))]

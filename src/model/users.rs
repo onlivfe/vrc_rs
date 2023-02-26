@@ -108,16 +108,20 @@ pub struct User {
 	pub bio: String,
 	/// Links that the user has added about themselves
 	pub bio_links: Vec<String>,
-	/// The avatar's image, for profile picture see the [profile pic override](Self::profile_pic_override)
+	/// The avatar's image, for profile picture see the [profile pic
+	/// override](Self::profile_pic_override)
 	pub current_avatar_image_url: String,
-	/// The avatar's smaller image, for profile picture see the [profile pic override](Self::profile_pic_override)
+	/// The avatar's smaller image, for profile picture see the [profile pic
+	/// override](Self::profile_pic_override)
 	pub current_avatar_thumbnail_image_url: String,
 	#[serde(rename = "date_joined")]
 	/// When the user joined VRC
 	pub date_joined: String,
 	/// If the user has some sort of a special status
 	pub developer_type: DeveloperType,
-	/// A users visual display name. This is what shows up in-game, and can different from their `username`. Changing display name is restricted to a cool down period.
+	/// A users visual display name. This is what shows up in-game, and can
+	/// different from their `username`. Changing display name is restricted to
+	/// a cool down period.
 	pub display_name: String,
 	/// TODO: Figure out
 	pub friend_key: String,
@@ -136,7 +140,8 @@ pub struct User {
 	#[serde(rename = "last_login")]
 	pub last_login: String,
 	// TODO: Platform enum
-	/// This can be `standalonewindows` or `android`, but can also pretty much be any random Unity version or even `unknownplatform`.
+	/// This can be `standalonewindows` or `android`, but can also pretty much
+	/// be any random Unity version or even `unknownplatform`.
 	#[serde(rename = "last_platform")]
 	pub last_platform: String,
 	/// The location that the user is in
