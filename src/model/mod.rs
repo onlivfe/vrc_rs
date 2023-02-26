@@ -1,4 +1,7 @@
-pub mod id;
+//! Models of the API responses to queries.
+
+// Can't do much about API types
+#![allow(clippy::struct_excessive_bools)]
 
 mod auth;
 pub use auth::*;

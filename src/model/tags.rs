@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
+/// A tag that users and worlds for example can have
 pub enum Tag {
 	/// Tags which started with `system_`, will have the prefix removed
 	System(String),

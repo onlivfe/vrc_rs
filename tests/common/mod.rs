@@ -1,4 +1,4 @@
-#![cfg(any(feature = "http_client", feature = "ws_client"))]
+#![cfg(feature = "api_client")]
 // Something's funky with checking if these are used or not.
 //#![allow(dead_code)]
 //use vrc::{};
@@ -11,6 +11,6 @@ const USER_AGENT: &str = concat!(
 	") - tests",
 );
 
-pub fn api_client() -> AuthenticatedCVR {
+pub fn api_client() -> vrc::api_client::AuthenticatedVRC {
 	todo!();
 }
