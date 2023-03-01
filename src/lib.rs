@@ -29,6 +29,11 @@ pub mod id;
 pub mod model;
 pub mod query;
 
+/// The version 1 VRC API
+pub const API_BASE_URI: &str = "https://vrchat.com/api/1";
+/// VRC API for some reason uses a static cookie key for requests
+pub const API_KEY: &str = "JlE5Jldo5Jibnk5O5hTx6XVqsJu4WJ26";
+
 #[cfg(feature = "api_client")]
 #[cfg_attr(nightly, doc(cfg(feature = "api_client")))]
 pub mod api_client;

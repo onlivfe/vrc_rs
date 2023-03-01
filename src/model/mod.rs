@@ -3,8 +3,6 @@
 // Can't do much about API types
 #![allow(clippy::struct_excessive_bools)]
 
-mod auth;
-pub use auth::*;
 mod avatars;
 pub use avatars::*;
 mod friends;

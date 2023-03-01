@@ -15,6 +15,39 @@ If you're looking for a more mature project, please consider looking at their [g
 
 I disliked the generated nature of it though, and wanted more strong Rust-like things for some things, which is why this crate exists.
 
+## Testing
+
+The integration tests contact the live API.
+That's why they are ignored by default.
+
+Pretty much all of them require authentication.
+
+Sadly not all the things can even be reliably tested without creating a mock API.
+Which in turn defeats the purpose of the tests in the first place.
+So only some of the behavior is actually tested, though improvements to it are welcome.
+
+### Creating a user session manually
+
+Getting the authentication for VRC takes a few steps due to it's janky usage of cookies, and 2fa requiring another request.
+
+You can use the `get_auth.py` script for convenience.
+
+### Running ignored tests
+
+Make sure that you've got:
+
+- an internet connection
+- a valid `user-sesion.json`
+
+Then just run the tests;
+
+```sh
+# A specific test with output logging
+cargo test --all-features current_user -- --exact --ignored --nocapture
+# All tests
+cargo test --all-features -- --ignored
+```
+
 ## License
 
 Note that the license is `MPL-2.0` instead of the more common `MIT OR Apache-2.0`.

@@ -17,6 +17,8 @@
 //!
 //! > Requires the `Authorization` header in addition to the rate limiting.
 
+use std::num::NonZeroU32;
+
 use governor::{
 	clock::DefaultClock,
 	middleware::NoOpMiddleware,
@@ -24,12 +26,12 @@ use governor::{
 	Quota,
 	RateLimiter,
 };
+use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use racal::{Queryable, RequestMethod};
 use reqwest::{header::HeaderMap, Client};
 use serde::de::DeserializeOwned;
-use std::num::NonZeroU32;
 
-use crate::query::{Authentication, NoAuthentication};
+use crate::query::{Authenticating, Authentication};
 
 /// An error that may happen with an API query
 #[derive(Debug)]
@@ -41,15 +43,11 @@ pub enum ApiError {
 }
 
 impl From<serde_json::Error> for ApiError {
-	fn from(err: serde_json::Error) -> Self {
-		Self::Serde(err)
-	}
+	fn from(err: serde_json::Error) -> Self { Self::Serde(err) }
 }
 
 impl From<reqwest::Error> for ApiError {
-	fn from(err: reqwest::Error) -> Self {
-		Self::Reqwest(err)
-	}
+	fn from(err: reqwest::Error) -> Self { Self::Reqwest(err) }
 }
 
 type NormalRateLimiter =
@@ -60,6 +58,7 @@ pub struct UnauthenticatedVRC {
 	user_agent: String,
 	http: Client,
 	rate_limiter: NormalRateLimiter,
+	auth: Authenticating,
 }
 
 /// The main API client with authentication
@@ -71,9 +70,7 @@ pub struct AuthenticatedVRC {
 }
 
 async fn base_query<R, FromState: Send, T>(
-	http: &Client,
-	api_state: FromState,
-	rate_limiter: &NormalRateLimiter,
+	http: &Client, api_state: FromState, rate_limiter: &NormalRateLimiter,
 	queryable: T,
 ) -> Result<R, ApiError>
 where
@@ -115,13 +112,33 @@ fn http_rate_limiter() -> NormalRateLimiter {
 
 impl AuthenticatedVRC {
 	/// Creates an API client
-	fn http_client(user_agent: &str, auth: &Authentication) -> Result<Client, ApiError> {
+	fn http_client(
+		user_agent: &str, auth: &Authentication,
+	) -> Result<Client, ApiError> {
 		use serde::ser::Error;
 
 		let builder = Client::builder();
 		let mut headers = HeaderMap::new();
+		headers
+			.insert(reqwest::header::ACCEPT, "application/json".parse().unwrap());
+		headers.insert(
+			reqwest::header::CONTENT_TYPE,
+			"application/json".parse().unwrap(),
+		);
 
-		// TODO: authentication
+		let mut cookie =
+			"apiKey=".to_owned() + crate::API_KEY + "; auth=" + &auth.token;
+		if let Some(second_factor) = &auth.second_factor_token {
+			cookie.push_str("; twoFactorAuth=");
+			cookie.push_str(second_factor);
+		}
+
+		headers.insert(
+			reqwest::header::COOKIE,
+			cookie.parse().map_err(|_| {
+				serde_json::Error::custom("Couldn't turn auth into a cookie header")
+			})?,
+		);
 
 		Ok(builder.user_agent(user_agent).default_headers(headers).build()?)
 	}
@@ -131,11 +148,15 @@ impl AuthenticatedVRC {
 	/// # Errors
 	///
 	/// If deserializing user agent fails.
-	pub fn downgrade(self) -> Result<UnauthenticatedVRC, ApiError> {
+	pub fn downgrade(
+		self, auth: impl Into<Authenticating>,
+	) -> Result<UnauthenticatedVRC, ApiError> {
+		let auth = auth.into();
 		Ok(UnauthenticatedVRC {
-			http: UnauthenticatedVRC::http_client(&self.user_agent)?,
+			http: UnauthenticatedVRC::http_client(&self.user_agent, &auth)?,
 			rate_limiter: self.rate_limiter,
 			user_agent: self.user_agent,
+			auth,
 		})
 	}
 
@@ -145,8 +166,7 @@ impl AuthenticatedVRC {
 	///
 	/// If deserializing user agent into a header fails
 	pub fn new(
-		user_agent: String,
-		auth: impl Into<Authentication> + Send,
+		user_agent: String, auth: impl Into<Authentication> + Send,
 	) -> Result<Self, ApiError> {
 		let auth = auth.into();
 		Ok(Self {
@@ -162,7 +182,9 @@ impl AuthenticatedVRC {
 	/// # Errors
 	///
 	/// If something with the request failed.
-	pub async fn query<'a, R, FromState, T>(&'a self, queryable: T) -> Result<R, ApiError>
+	pub async fn query<'a, R, FromState, T>(
+		&'a self, queryable: T,
+	) -> Result<R, ApiError>
 	where
 		R: DeserializeOwned,
 		FromState: From<&'a Authentication> + Send,
@@ -171,12 +193,73 @@ impl AuthenticatedVRC {
 		let state = FromState::from(&self.auth);
 		base_query(&self.http, state, &self.rate_limiter, queryable).await
 	}
+
+	/// Changes the second factor token.
+	///
+	/// Login flow should be started with an unauthenticated client,
+	/// then upgraded to an authenticated one if it fails with 2FA missing,
+	/// and a verify 2FA code request should be made to get the token,
+	/// which should then be used with this.
+	///
+	/// Not most rust-like API, but the VRC authentication is quite a mess
+	/// already,  with how it's dependent on cookies and such.
+	///
+	/// # Errors
+	///
+	/// If deserializing user agent or authentication fails.
+	pub fn change_second_factor(
+		self, second_factor_token: impl Into<Option<String>>,
+	) -> Result<Self, ApiError> {
+		let mut auth = self.auth;
+		auth.second_factor_token = second_factor_token.into();
+		Ok(Self {
+			http: Self::http_client(&self.user_agent, &auth)?,
+			rate_limiter: self.rate_limiter,
+			user_agent: self.user_agent,
+			auth,
+		})
+	}
 }
 
 impl UnauthenticatedVRC {
-	/// Creates an unauthenticated API client
-	fn http_client(user_agent: &str) -> Result<Client, ApiError> {
-		Ok(Client::builder().user_agent(user_agent).build()?)
+	/// Creates an API client
+	fn http_client(
+		user_agent: &str, auth: &Authenticating,
+	) -> Result<Client, ApiError> {
+		use base64::Engine as _;
+		use serde::ser::Error;
+
+		let builder = Client::builder();
+		let mut headers = HeaderMap::new();
+		headers
+			.insert(reqwest::header::ACCEPT, "application/json".parse().unwrap());
+		headers.insert(
+			reqwest::header::CONTENT_TYPE,
+			"application/json".parse().unwrap(),
+		);
+
+		headers.insert(
+			reqwest::header::COOKIE,
+			format!("apiKey={}", crate::API_KEY).parse().map_err(|_| {
+				serde_json::Error::custom("Couldn't turn auth into a cookie header")
+			})?,
+		);
+
+		// This is dumb...
+		let auth = "Basic ".to_owned()
+			+ &base64::engine::general_purpose::URL_SAFE.encode(
+				utf8_percent_encode(&auth.username, NON_ALPHANUMERIC).to_string()
+					+ ":" + &utf8_percent_encode(&auth.password, NON_ALPHANUMERIC)
+					.to_string(),
+			);
+		headers.insert(
+			reqwest::header::AUTHORIZATION,
+			auth.parse().map_err(|_| {
+				serde_json::Error::custom("Couldn't turn username into a header")
+			})?,
+		);
+
+		Ok(builder.user_agent(user_agent).default_headers(headers).build()?)
 	}
 
 	/// Adds authentication to the API client
@@ -185,8 +268,7 @@ impl UnauthenticatedVRC {
 	///
 	/// If deserializing user agent or authentication fails.
 	pub fn upgrade(
-		self,
-		auth: impl Into<Authentication> + Send,
+		self, auth: impl Into<Authentication> + Send,
 	) -> Result<AuthenticatedVRC, ApiError> {
 		let auth = auth.into();
 		Ok(AuthenticatedVRC {
@@ -202,11 +284,15 @@ impl UnauthenticatedVRC {
 	/// # Errors
 	///
 	/// If deserializing user agent into a header fails
-	pub fn new(user_agent: String) -> Result<Self, ApiError> {
+	pub fn new(
+		user_agent: String, auth: impl Into<Authenticating>,
+	) -> Result<Self, ApiError> {
+		let auth = auth.into();
 		Ok(Self {
-			http: Self::http_client(&user_agent)?,
+			http: Self::http_client(&user_agent, &auth)?,
 			rate_limiter: http_rate_limiter(),
 			user_agent,
+			auth,
 		})
 	}
 
@@ -215,13 +301,15 @@ impl UnauthenticatedVRC {
 	/// # Errors
 	///
 	/// If something with the request failed.
-	pub async fn query<'a, R, FromState, T>(&'a self, queryable: T) -> Result<R, ApiError>
+	pub async fn query<'a, R, FromState, T>(
+		&'a self, queryable: T,
+	) -> Result<R, ApiError>
 	where
 		R: DeserializeOwned,
-		FromState: From<&'a NoAuthentication> + Send,
+		FromState: From<&'a Authenticating> + Send,
 		T: Queryable<FromState, R> + Send + Sync,
 	{
-		let state = FromState::from(&NoAuthentication {});
+		let state = FromState::from(&self.auth);
 		base_query(&self.http, state, &self.rate_limiter, queryable).await
 	}
 }

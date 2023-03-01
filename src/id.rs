@@ -15,12 +15,7 @@ use serde::{Deserialize, Serialize};
 
 /// A VRC user's ID
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
-pub enum User {
-	/// A modern user ID
-	Standard(String),
-	/// An old user ID without a prefix, less than 11 chars
-	Legacy(String),
-}
+pub struct User(String);
 
 /// A VRC instance's ID
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]

@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use time::{serde::rfc3339, OffsetDateTime};
 
 #[derive(
 	Clone,
@@ -27,9 +28,7 @@ pub enum DeveloperType {
 }
 
 impl Default for DeveloperType {
-	fn default() -> Self {
-		Self::None
-	}
+	fn default() -> Self { Self::None }
 }
 
 #[derive(
@@ -57,9 +56,7 @@ pub enum UserState {
 }
 
 impl Default for UserState {
-	fn default() -> Self {
-		Self::Offline
-	}
+	fn default() -> Self { Self::Offline }
 }
 
 #[derive(
@@ -93,9 +90,7 @@ pub enum UserStatus {
 }
 
 impl Default for UserStatus {
-	fn default() -> Self {
-		Self::Offline
-	}
+	fn default() -> Self { Self::Offline }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -115,6 +110,7 @@ pub struct User {
 	/// override](Self::profile_pic_override)
 	pub current_avatar_thumbnail_image_url: String,
 	#[serde(rename = "date_joined")]
+	// TODO: use time::Date
 	/// When the user joined VRC
 	pub date_joined: String,
 	/// If the user has some sort of a special status
@@ -125,51 +121,88 @@ pub struct User {
 	pub display_name: String,
 	/// TODO: Figure out
 	pub friend_key: String,
-	/// TODO: Figure out
-	pub friend_request_status: String,
 	/// The user's ID
 	pub id: crate::id::User,
-	/// The ID that the user is in
-	pub instance_id: crate::id::OfflineOr<crate::id::Instance>,
 	/// If the user is a friend of the currently authenticated user
 	pub is_friend: bool,
 	/// Either a date-time or empty string.
-	#[serde(rename = "last_activity")]
-	pub last_activity: String,
+	#[serde(rename = "last_activity", with = "rfc3339")]
+	pub last_activity: OffsetDateTime,
 	/// Either a date-time or empty string.
-	#[serde(rename = "last_login")]
-	pub last_login: String,
+	#[serde(rename = "last_login", with = "rfc3339")]
+	pub last_login: OffsetDateTime,
 	// TODO: Platform enum
 	/// This can be `standalonewindows` or `android`, but can also pretty much
 	/// be any random Unity version or even `unknownplatform`.
 	#[serde(rename = "last_platform")]
 	pub last_platform: String,
-	/// The location that the user is in
-	pub location: crate::id::OfflineOr<crate::id::World>,
-	/// The currently authenticated user's note about this user
-	pub note: String,
 	/// Possible profile picture URL
 	pub profile_pic_override: String,
 	/// If the user is online or not
 	pub state: UserState,
 	/// The status of the user
 	pub status: UserStatus,
-	/// Human readable version of the status
+	/// User set status message
 	pub status_description: String,
-	// TODO: Enum
 	/// Tags of the user
 	pub tags: Vec<String>,
-	/// If the user is traveling to an instance but not yet in it
-	pub traveling_to_instance: Option<crate::id::Instance>,
-	/// If the user is traveling to somewhere but not yet there
-	pub traveling_to_location: Option<String>,
-	/// If the user is traveling to a world but not yet in it
-	pub traveling_to_world: Option<crate::id::World>,
-	/// URL to the user's icon
+	/// URL to the user's icon, can be an empty string
+	#[serde(default)]
 	pub user_icon: String,
 	/// Only returned if for current user. [See issue by Tupper for more information](https://github.com/pypy-vrc/VRCX/issues/429).
-	#[serde(rename = "username", skip_serializing_if = "Option::is_none")]
+	#[serde(default)]
 	pub username: Option<String>,
-	/// The ID of the world that the user is in
-	pub world_id: crate::id::OfflineOr<crate::id::World>,
+}
+
+/// 2FA variants
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum AdditionalAuthFactor {
+	/// Email code
+	EmailOtp,
+	/// Authenticator app
+	Totp,
+	/// Recovery code
+	Otp,
+}
+
+/// Response from the API when logging in
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LoginResponse {
+	#[serde(rename = "requiresTwoFactorAuth")]
+	requires_additional_auth: Vec<AdditionalAuthFactor>,
+}
+
+/// Possible response types from the current user endpoint
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum LoginResponseOrCurrentUser {
+	/// Information about the currently authenticated user
+	User(Box<User>),
+	/// Details about the login, like needing additional 2FA verification
+	Login(LoginResponse),
+}
+
+/// Returned if an error happens with authentication
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AuthenticationError {
+	/// If the 2FA code was okay
+	pub verified: bool,
+}
+
+/// Status of current authentication token
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AuthStatus {
+	/// If the authentication is OK
+	pub ok: bool,
+	/// The token that the authentication is using
+	pub token: String,
+}
+
+/// Status for if the sent 2FA code was okay
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SecondFactorVerificationStatus {
+	/// If the 2FA code was okay
+	pub verified: bool,
 }
