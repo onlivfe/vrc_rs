@@ -1,5 +1,3 @@
 {
-	"rust-analyzer.cargo.features": [
-		"api_client"
-	]
+	"rust-analyzer.cargo.features": "all"
 }

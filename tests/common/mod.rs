@@ -29,9 +29,5 @@ pub static USER_AUTH: Lazy<Authentication> = Lazy::new(|| {
 });
 
 pub fn api_client() -> AuthenticatedVRC {
-	AuthenticatedVRC::new(
-		USER_AGENT.to_owned(),
-		Authentication::from(&USER_AUTH.clone()),
-	)
-	.unwrap()
+	AuthenticatedVRC::new(USER_AGENT.to_owned(), USER_AUTH.clone()).unwrap()
 }

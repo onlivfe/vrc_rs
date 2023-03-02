@@ -27,31 +27,23 @@ use governor::{
 	RateLimiter,
 };
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
-use racal::{Queryable, RequestMethod};
-use reqwest::{header::HeaderMap, Client};
-use serde::de::DeserializeOwned;
+use racal::reqwest::ApiError;
+use reqwest::{header::HeaderMap, Client, RequestBuilder};
 
 use crate::query::{Authenticating, Authentication};
 
-/// An error that may happen with an API query
-#[derive(Debug)]
-pub enum ApiError {
-	/// An error happened with serialization
-	Serde(serde_json::Error),
-	/// An error happened with the request itself
-	Reqwest(reqwest::Error),
-}
-
-impl From<serde_json::Error> for ApiError {
-	fn from(err: serde_json::Error) -> Self { Self::Serde(err) }
-}
-
-impl From<reqwest::Error> for ApiError {
-	fn from(err: reqwest::Error) -> Self { Self::Reqwest(err) }
-}
-
 type NormalRateLimiter =
 	RateLimiter<NotKeyed, InMemoryState, DefaultClock, NoOpMiddleware>;
+
+#[must_use]
+fn http_rate_limiter() -> NormalRateLimiter {
+	// ~5 seconds per request sustained over one minute, allowing up to a request
+	// per second in bursts.
+	RateLimiter::direct(
+		Quota::per_minute(NonZeroU32::try_from(12).unwrap())
+			.allow_burst(NonZeroU32::try_from(5).unwrap()),
+	)
+}
 
 /// The main API client without authentication
 pub struct UnauthenticatedVRC {
@@ -59,6 +51,20 @@ pub struct UnauthenticatedVRC {
 	http: Client,
 	rate_limiter: NormalRateLimiter,
 	auth: Authenticating,
+}
+
+#[async_trait::async_trait]
+impl racal::reqwest::ApiClient<Authenticating> for UnauthenticatedVRC {
+	fn state(&self) -> &Authenticating { &self.auth }
+
+	fn client(&self) -> &reqwest::Client { &self.http }
+
+	async fn before_request(
+		&self, req: RequestBuilder,
+	) -> Result<RequestBuilder, racal::reqwest::ApiError> {
+		self.rate_limiter.until_ready().await;
+		Ok(req)
+	}
 }
 
 /// The main API client with authentication
@@ -69,45 +75,18 @@ pub struct AuthenticatedVRC {
 	auth: Authentication,
 }
 
-async fn base_query<R, FromState: Send, T>(
-	http: &Client, api_state: FromState, rate_limiter: &NormalRateLimiter,
-	queryable: T,
-) -> Result<R, ApiError>
-where
-	R: DeserializeOwned,
-	T: Queryable<FromState, R> + Send + Sync,
-{
-	let mut request = http.request(
-		match queryable.method(&api_state) {
-			RequestMethod::Get => reqwest::Method::GET,
-			RequestMethod::Head => reqwest::Method::HEAD,
-			RequestMethod::Patch => reqwest::Method::PATCH,
-			RequestMethod::Post => reqwest::Method::POST,
-			RequestMethod::Put => reqwest::Method::PUT,
-			RequestMethod::Delete => reqwest::Method::DELETE,
-		},
-		queryable.url(&api_state),
-	);
-	if let Some(body) = queryable.body(&api_state) {
-		request = request.body(body?);
+#[async_trait::async_trait]
+impl racal::reqwest::ApiClient<Authentication> for AuthenticatedVRC {
+	fn state(&self) -> &Authentication { &self.auth }
+
+	fn client(&self) -> &reqwest::Client { &self.http }
+
+	async fn before_request(
+		&self, req: RequestBuilder,
+	) -> Result<RequestBuilder, racal::reqwest::ApiError> {
+		self.rate_limiter.until_ready().await;
+		Ok(req)
 	}
-
-	rate_limiter.until_ready().await;
-	let response = request.send().await?.error_for_status()?;
-	// TODO: Figure out if there are any extra rate limit headers to respect
-
-	let bytes = response.bytes().await?;
-	Ok(queryable.deserialize(&bytes)?)
-}
-
-#[must_use]
-fn http_rate_limiter() -> NormalRateLimiter {
-	// ~5 seconds per request sustained over one minute, allowing up to a request
-	// per second in bursts.
-	RateLimiter::direct(
-		Quota::per_minute(NonZeroU32::try_from(12).unwrap())
-			.allow_burst(NonZeroU32::try_from(5).unwrap()),
-	)
 }
 
 impl AuthenticatedVRC {
@@ -175,23 +154,6 @@ impl AuthenticatedVRC {
 			user_agent,
 			auth,
 		})
-	}
-
-	/// Sends a query to the VRC API
-	///
-	/// # Errors
-	///
-	/// If something with the request failed.
-	pub async fn query<'a, R, FromState, T>(
-		&'a self, queryable: T,
-	) -> Result<R, ApiError>
-	where
-		R: DeserializeOwned,
-		FromState: From<&'a Authentication> + Send,
-		T: Queryable<FromState, R> + Send + Sync,
-	{
-		let state = FromState::from(&self.auth);
-		base_query(&self.http, state, &self.rate_limiter, queryable).await
 	}
 
 	/// Changes the second factor token.
@@ -294,22 +256,5 @@ impl UnauthenticatedVRC {
 			user_agent,
 			auth,
 		})
-	}
-
-	/// Sends a query to the VRC API
-	///
-	/// # Errors
-	///
-	/// If something with the request failed.
-	pub async fn query<'a, R, FromState, T>(
-		&'a self, queryable: T,
-	) -> Result<R, ApiError>
-	where
-		R: DeserializeOwned,
-		FromState: From<&'a Authenticating> + Send,
-		T: Queryable<FromState, R> + Send + Sync,
-	{
-		let state = FromState::from(&self.auth);
-		base_query(&self.http, state, &self.rate_limiter, queryable).await
 	}
 }

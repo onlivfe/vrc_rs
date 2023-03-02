@@ -13,7 +13,7 @@
 //! use enums for a lot of things, and manually implement some traits like
 //! debug for sensitive values such as passwords.
 
-#![cfg_attr(nightly, feature(doc_cfg))]
+#![cfg_attr(nightly, feature(doc_auto_cfg))]
 #![deny(clippy::all)]
 #![forbid(unsafe_code)]
 #![deny(clippy::cargo)]
@@ -24,6 +24,8 @@
 #![warn(clippy::nursery)]
 // My project my choice, tabs are literally made for indentation, spaces not.
 #![allow(clippy::tabs_in_doc_comments)]
+// Not much can be done about it :/
+#![allow(clippy::multiple_crate_versions)]
 
 pub mod id;
 pub mod model;
@@ -35,5 +37,4 @@ pub const API_BASE_URI: &str = "https://vrchat.com/api/1";
 pub const API_KEY: &str = "JlE5Jldo5Jibnk5O5hTx6XVqsJu4WJ26";
 
 #[cfg(feature = "api_client")]
-#[cfg_attr(nightly, doc(cfg(feature = "api_client")))]
 pub mod api_client;

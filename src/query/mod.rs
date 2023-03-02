@@ -25,10 +25,8 @@ impl std::fmt::Debug for Authenticating {
 	}
 }
 
-impl From<&Self> for Authenticating {
-	fn from(auth: &Self) -> Self {
-		Self { username: auth.username.clone(), password: auth.password.clone() }
-	}
+impl racal::FromApiState<Self> for Authenticating {
+	fn from_state(state: &Self) -> &Self { state }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -57,11 +55,6 @@ impl std::fmt::Debug for Authentication {
 	}
 }
 
-impl From<&Self> for Authentication {
-	fn from(auth: &Self) -> Self {
-		Self {
-			token: auth.token.clone(),
-			second_factor_token: auth.second_factor_token.clone(),
-		}
-	}
+impl racal::FromApiState<Self> for Authentication {
+	fn from_state(state: &Self) -> &Self { state }
 }
