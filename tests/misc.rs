@@ -1,11 +1,14 @@
-use racal::reqwest::ApiClient;
-use vrc::{model::LoginResponseOrCurrentUser, query::Authentication};
+use vrc::{
+	api_client::{ApiClient, ApiError},
+	model::LoginResponseOrCurrentUser,
+	query::Authentication,
+};
 
 mod common;
 
 #[tokio::test]
 #[ignore]
-async fn current_user() -> Result<(), racal::reqwest::ApiError> {
+async fn current_user() -> Result<(), ApiError> {
 	let api_client = common::api_client();
 
 	let query = vrc::query::GetCurrentUser;

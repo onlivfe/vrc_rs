@@ -27,7 +27,7 @@ use governor::{
 	RateLimiter,
 };
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
-use racal::reqwest::ApiError;
+pub use racal::reqwest::{ApiClient, ApiError};
 use reqwest::{header::HeaderMap, Client, RequestBuilder};
 
 use crate::query::{Authenticating, Authentication};
