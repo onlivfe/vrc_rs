@@ -4,7 +4,7 @@ mod auth;
 pub use auth::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 /// [`racal::Queryable`](racal::Queryable)'s `RequiredApiState`.
 ///
 /// Even unauthenticated requests to VRC's API should take rate limits
@@ -29,7 +29,7 @@ impl racal::FromApiState<Self> for Authenticating {
 	fn from_state(state: &Self) -> &Self { state }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 /// [`racal::Queryable`](racal::Queryable)'s `RequiredApiState`.
 ///
 /// With authentication
@@ -43,7 +43,7 @@ pub struct Authentication {
 impl std::fmt::Debug for Authentication {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		f.debug_struct("Authentication")
-			.field("token", &self.token)
+			.field("token", &"*****")
 			.field(
 				"second_factor_token",
 				match &self.second_factor_token {

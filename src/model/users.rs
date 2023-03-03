@@ -93,7 +93,7 @@ impl Default for UserStatus {
 	fn default() -> Self { Self::Offline }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Details about a VRC user
 pub struct User {
@@ -155,7 +155,7 @@ pub struct User {
 }
 
 /// 2FA variants
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub enum AdditionalAuthFactor {
 	/// Email code
@@ -167,7 +167,7 @@ pub enum AdditionalAuthFactor {
 }
 
 /// Response from the API when logging in
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LoginResponse {
 	#[serde(rename = "requiresTwoFactorAuth")]
@@ -175,7 +175,7 @@ pub struct LoginResponse {
 }
 
 /// Possible response types from the current user endpoint
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum LoginResponseOrCurrentUser {
 	/// Information about the currently authenticated user
@@ -185,14 +185,14 @@ pub enum LoginResponseOrCurrentUser {
 }
 
 /// Returned if an error happens with authentication
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct AuthenticationError {
 	/// If the 2FA code was okay
 	pub verified: bool,
 }
 
 /// Status of current authentication token
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct AuthStatus {
 	/// If the authentication is OK
 	pub ok: bool,
@@ -200,8 +200,17 @@ pub struct AuthStatus {
 	pub token: String,
 }
 
+impl std::fmt::Debug for AuthStatus {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.debug_struct("AuthStatus")
+			.field("ok", &self.ok)
+			.field("token", &"*****")
+			.finish()
+	}
+}
+
 /// Status for if the sent 2FA code was okay
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct SecondFactorVerificationStatus {
 	/// If the 2FA code was okay
 	pub verified: bool,
