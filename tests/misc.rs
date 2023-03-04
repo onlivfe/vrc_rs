@@ -1,8 +1,4 @@
-use vrc::{
-	api_client::{ApiClient, ApiError},
-	model::LoginResponseOrCurrentUser,
-	query::Authentication,
-};
+use vrc::api_client::{ApiClient, ApiError};
 
 mod common;
 
@@ -12,16 +8,9 @@ async fn current_user() -> Result<(), ApiError> {
 	let api_client = common::api_client();
 
 	let query = vrc::query::GetCurrentUser;
-	let current_user = api_client.query::<LoginResponseOrCurrentUser, Authentication, vrc::query::GetCurrentUser>(query).await?;
+	let current_user: vrc::model::User = api_client.query(query).await?;
 
 	dbg!(&current_user);
-
-	let current_user = match current_user {
-		LoginResponseOrCurrentUser::User(user) => user,
-		LoginResponseOrCurrentUser::Login(r) => {
-			panic!("Expected to get current user details, but got login resp: {r:?}")
-		}
-	};
 
 	assert!(!current_user.bio.is_empty());
 

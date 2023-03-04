@@ -155,7 +155,17 @@ pub struct User {
 }
 
 /// 2FA variants
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
+#[derive(
+	Clone,
+	Copy,
+	Debug,
+	Eq,
+	PartialEq,
+	Hash,
+	Serialize,
+	Deserialize,
+	strum::AsRefStr,
+)]
 #[serde(rename_all = "camelCase")]
 pub enum AdditionalAuthFactor {
 	/// Email code
@@ -170,8 +180,9 @@ pub enum AdditionalAuthFactor {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LoginResponse {
+	/// If the login still requires 2FA
 	#[serde(rename = "requiresTwoFactorAuth")]
-	requires_additional_auth: Vec<AdditionalAuthFactor>,
+	pub requires_additional_auth: Vec<AdditionalAuthFactor>,
 }
 
 /// Possible response types from the current user endpoint

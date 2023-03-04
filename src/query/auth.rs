@@ -15,9 +15,7 @@ impl Queryable<Authenticating, crate::model::LoginResponseOrCurrentUser>
 	}
 }
 
-impl Queryable<Authentication, crate::model::LoginResponseOrCurrentUser>
-	for GetCurrentUser
-{
+impl Queryable<Authentication, crate::model::User> for GetCurrentUser {
 	fn url(&self, _: &Authentication) -> String {
 		format!("{}/auth/user", crate::API_BASE_URI)
 	}

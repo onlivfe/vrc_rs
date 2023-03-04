@@ -28,9 +28,17 @@ use governor::{
 };
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 pub use racal::reqwest::{ApiClient, ApiError};
+use racal::FromApiState;
 use reqwest::{header::HeaderMap, Client, RequestBuilder};
 
-use crate::query::{Authenticating, Authentication};
+use crate::{
+	model::{
+		LoginResponse,
+		LoginResponseOrCurrentUser,
+		SecondFactorVerificationStatus,
+	},
+	query::{Authenticating, Authentication, VerifySecondFactor},
+};
 
 type NormalRateLimiter =
 	RateLimiter<NotKeyed, InMemoryState, DefaultClock, NoOpMiddleware>;
@@ -145,7 +153,7 @@ impl AuthenticatedVRC {
 	///
 	/// If deserializing user agent into a header fails
 	pub fn new(
-		user_agent: String, auth: impl Into<Authentication> + Send,
+		user_agent: String, auth: impl Into<Authentication>,
 	) -> Result<Self, ApiError> {
 		let auth = auth.into();
 		Ok(Self {
@@ -156,19 +164,58 @@ impl AuthenticatedVRC {
 		})
 	}
 
-	/// Changes the second factor token.
-	///
-	/// Login flow should be started with an unauthenticated client,
-	/// then upgraded to an authenticated one if it fails with 2FA missing,
-	/// and a verify 2FA code request should be made to get the token,
-	/// which should then be used with this.
-	///
-	/// Not most rust-like API, but the VRC authentication is quite a mess
-	/// already,  with how it's dependent on cookies and such.
+	/// Creates the VRC API client again with different auth
 	///
 	/// # Errors
 	///
-	/// If deserializing user agent or authentication fails.
+	/// If deserializing user agent into a header fails
+	pub fn recreate(
+		self, auth: impl Into<Authentication>,
+	) -> Result<Self, ApiError> {
+		let auth = auth.into();
+		Ok(Self {
+			http: Self::http_client(&self.user_agent, &auth)?,
+			rate_limiter: http_rate_limiter(),
+			user_agent: self.user_agent,
+			auth,
+		})
+	}
+
+	/// Tries to extract the two factor auth cookie from a verify two factor
+	/// request
+	///
+	/// # Errors
+	///
+	/// If the cookie wasn't included in the response,
+	/// or if something with the request failed.
+	pub async fn verify_second_factor(
+		&self, second_factor: VerifySecondFactor,
+	) -> Result<(SecondFactorVerificationStatus, String), ApiError> {
+		use serde::ser::Error;
+
+		let request = Self::build_request(
+			self.client(),
+			Authentication::from_state(self.state()),
+			&second_factor,
+		)?;
+		let request = self.before_request(request).await?;
+		let response = request.send().await?;
+
+		let auth: String = extract_cookie(response.headers(), "twoFactorAuth=")
+			.ok_or_else(|| {
+				serde_json::Error::custom("twoFactorAuth cookie is missing")
+			})?;
+
+		let resp = self.handle_response::<SecondFactorVerificationStatus, Authentication, crate::query::VerifySecondFactor>(second_factor, response).await?;
+
+		Ok((resp, auth))
+	}
+
+	/// Changes the 2FA token
+	///
+	/// # Errors
+	///
+	/// If deserializing user agent into a header fails
 	pub fn change_second_factor(
 		self, second_factor_token: impl Into<Option<String>>,
 	) -> Result<Self, ApiError> {
@@ -176,7 +223,7 @@ impl AuthenticatedVRC {
 		auth.second_factor_token = second_factor_token.into();
 		Ok(Self {
 			http: Self::http_client(&self.user_agent, &auth)?,
-			rate_limiter: self.rate_limiter,
+			rate_limiter: http_rate_limiter(),
 			user_agent: self.user_agent,
 			auth,
 		})
@@ -257,4 +304,74 @@ impl UnauthenticatedVRC {
 			auth,
 		})
 	}
+
+	/// Creates the VRC API client again with different auth
+	///
+	/// # Errors
+	///
+	/// If deserializing user agent into a header fails
+	pub fn recreate(
+		self, auth: impl Into<Authenticating>,
+	) -> Result<Self, ApiError> {
+		let auth = auth.into();
+		Ok(Self {
+			http: Self::http_client(&self.user_agent, &auth)?,
+			rate_limiter: http_rate_limiter(),
+			user_agent: self.user_agent,
+			auth,
+		})
+	}
+
+	/// Tries to extract the login cookie from a get user request
+	///
+	/// # Errors
+	///
+	/// If the cookie wasn't included in the response,
+	/// or if something with the request failed.
+	pub async fn login(&self) -> Result<(LoginResponse, String), ApiError> {
+		use serde::ser::Error;
+
+		let queryable = crate::query::GetCurrentUser;
+
+		let request = Self::build_request(
+			self.client(),
+			Authenticating::from_state(self.state()),
+			&queryable,
+		)?;
+		let request = self.before_request(request).await?;
+		let response = request.send().await?;
+
+		let auth: String = extract_cookie(response.headers(), "auth=")
+			.ok_or_else(|| serde_json::Error::custom("auth cookie is missing"))?;
+
+		let resp = self.handle_response::<LoginResponseOrCurrentUser, Authenticating, crate::query::GetCurrentUser>(queryable, response).await?;
+
+		let resp = match resp {
+			LoginResponseOrCurrentUser::Login(login_resp) => login_resp,
+			LoginResponseOrCurrentUser::User(_) => {
+				return Err(
+					serde_json::Error::custom("Expected login response and not user")
+						.into(),
+				);
+			}
+		};
+
+		Ok((resp, auth))
+	}
+}
+
+/// Gets the cookie value from headers for `first_term` `cookie_name=`
+fn extract_cookie(headers: &HeaderMap, first_term: &str) -> Option<String> {
+	headers
+		.iter()
+		.filter(|(name, _)| {
+			name.as_str() == "Set-Cookie" || name.as_str() == "set-cookie"
+		})
+		.filter_map(|(_, val)| val.to_str().ok())
+		.find_map(|value| {
+			value
+				.split_terminator(';')
+				.find_map(|value| value.trim_start().strip_prefix(first_term))
+				.map(std::borrow::ToOwned::to_owned)
+		})
 }
