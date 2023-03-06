@@ -15,7 +15,7 @@ impl Queryable<Authenticating, crate::model::LoginResponseOrCurrentUser>
 	}
 }
 
-impl Queryable<Authentication, crate::model::User> for GetCurrentUser {
+impl Queryable<Authentication, crate::model::CurrentUser> for GetCurrentUser {
 	fn url(&self, _: &Authentication) -> String {
 		format!("{}/auth/user", crate::API_BASE_URI)
 	}
@@ -68,5 +68,37 @@ pub struct Verify;
 impl Queryable<Authentication, crate::model::AuthStatus> for Verify {
 	fn url(&self, _: &Authentication) -> String {
 		format!("{}/auth", crate::API_BASE_URI)
+	}
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
+/// Verifies that the current auth token is valid
+pub struct Logout;
+
+impl Queryable<Authentication, crate::model::StatusResponse> for Logout {
+	fn url(&self, _: &Authentication) -> String {
+		format!("{}/logout", crate::API_BASE_URI)
+	}
+
+	fn method(&self, _state: &Authentication) -> racal::RequestMethod {
+		racal::RequestMethod::Put
+	}
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
+/// Verifies that the current auth token is valid
+pub struct DeleteAccount {
+	/// The ID of the account to delete,
+	/// should match currently authenticated account.
+	pub id: crate::id::User,
+}
+
+impl Queryable<Authentication, crate::model::CurrentUser> for DeleteAccount {
+	fn url(&self, _: &Authentication) -> String {
+		format!("{}/users/{}/delete", crate::API_BASE_URI, self.id.as_ref())
+	}
+
+	fn method(&self, _state: &Authentication) -> racal::RequestMethod {
+		racal::RequestMethod::Put
 	}
 }

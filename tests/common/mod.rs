@@ -1,7 +1,6 @@
 #![cfg(feature = "api_client")]
 // Something's funky with checking if these are used or not.
-//#![allow(dead_code)]
-//use vrc::{};
+#![allow(dead_code)]
 
 use once_cell::sync::Lazy;
 use vrc::{api_client::AuthenticatedVRC, query::Authentication};
@@ -13,6 +12,20 @@ const USER_AGENT: &str = concat!(
 	env!("CARGO_PKG_REPOSITORY"),
 	") - tests",
 );
+
+#[derive(Default, serde::Deserialize)]
+pub struct TestConfig {
+	pub friend_id: Option<vrc::id::User>,
+	pub self_id: Option<vrc::id::User>,
+}
+
+pub static TEST_CONFIG: Lazy<TestConfig> = Lazy::new(|| {
+	std::fs::read("test-config.json")
+		.map(|bytes| serde_json::from_slice::<TestConfig>(&bytes).ok())
+		.ok()
+		.flatten()
+		.unwrap_or_default()
+});
 
 pub static USER_AUTH: Lazy<Authentication> = Lazy::new(|| {
 	let user_auth: Authentication = serde_json::from_slice::<Authentication>(

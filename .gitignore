@@ -15,5 +15,6 @@ Cargo.lock
 # Linux directory file.
 .directory
 
-# Auth
+# Testing related
 user-auth.json
+test-config.json

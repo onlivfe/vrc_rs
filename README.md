@@ -15,6 +15,27 @@ If you're looking for a more mature project, please consider looking at their [g
 
 I disliked the generated nature of it though, and wanted more strong Rust-like things for some things, which is why this crate exists.
 
+There's quite a bit missing, PRs to improve the situation, even beyond the plans:
+
+| Status | Category | Planned |
+| --- | --- | --- |
+| Implemented | Authentication | More testing |
+| None | Avatars | Getting a specific avatar only |
+| None | Economy | None |
+| None | Favorites | Eventual implementation |
+| None | Files | None |
+| Partial | Friends | Implementation soon |
+| None | Groups | None, at least in the near term |
+| None | Invites | Listing invites only |
+| Partial models only | Instances | Implementation soon |
+| None | Notifications | Eventual implementation |
+| None | Permissions | None |
+| None | System | Eventual implementation of system statistics |
+| Partial | Users | Planned to be implemented soon |
+| None | Worlds | None, at least in the near term |
+
+The categories are from the awesome [VRChat API Docs](https://vrchatapi.github.io/docs/api/) project.
+
 ## Testing
 
 The integration tests contact the live API.

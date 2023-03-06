@@ -1,8 +1,14 @@
 //! Models of the queries for VRC's API.
 
+#![allow(clippy::module_name_repetitions)]
+
 mod auth;
 pub use auth::*;
+mod friends;
+pub use friends::*;
+mod users;
 use serde::{Deserialize, Serialize};
+pub use users::*;
 
 #[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 /// [`racal::Queryable`](racal::Queryable)'s `RequiredApiState`.
