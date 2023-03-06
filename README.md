@@ -15,7 +15,7 @@ If you're looking for a more mature project, please consider looking at their [g
 
 I disliked the generated nature of it though, and wanted more strong Rust-like things for some things, which is why this crate exists.
 
-There's quite a bit missing, PRs to improve the situation, even beyond the plans:
+There's quite a bit missing, PRs are welcome to improve the situation, even beyond the plans:
 
 | Status | Category | Planned |
 | --- | --- | --- |
