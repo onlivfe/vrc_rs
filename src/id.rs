@@ -73,6 +73,7 @@ add_id!(Avatar);
 add_id!(User);
 add_id!(Instance);
 add_id!(World);
+add_id!(UnityPackage);
 
 /// Offline or the id of the world or whatever type T is
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
@@ -84,6 +85,16 @@ pub enum OfflineOr<T> {
 	Offline,
 	/// There exists an ID
 	Id(T),
+}
+
+impl<T> OfflineOr<T> {
+	/// Gives the ID as an option instead
+	pub const fn as_option(&self) -> Option<&T> {
+		match &self {
+			Self::Offline => None,
+			Self::Id(id) => Some(id),
+		}
+	}
 }
 
 /// Offline or private or the id of the instance or whatever type T is
@@ -98,6 +109,16 @@ pub enum OfflineOrPrivateOr<T> {
 	Offline,
 	/// There exists an ID
 	Id(T),
+}
+
+impl<T> OfflineOrPrivateOr<T> {
+	/// Gives the ID as an option instead
+	pub const fn as_option(&self) -> Option<&T> {
+		match &self {
+			Self::Offline | Self::Private => None,
+			Self::Id(id) => Some(id),
+		}
+	}
 }
 
 /// Any of the VRC IDs
@@ -122,6 +143,8 @@ pub enum Any {
 	Instance(Instance),
 	/// A world ID
 	World(World),
+	/// An ID for a Unity package
+	UnityPackage(UnityPackage),
 }
 
 impl AsRef<str> for Any {
@@ -133,6 +156,7 @@ impl AsRef<str> for Any {
 			Self::User(v) => v.as_ref(),
 			Self::Instance(v) => v.as_ref(),
 			Self::World(v) => v.as_ref(),
+			Self::UnityPackage(v) => v.as_ref(),
 		}
 	}
 }

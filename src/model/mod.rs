@@ -6,6 +6,8 @@
 // so it makes sense to add pre/postfixes to the names
 #![allow(clippy::module_name_repetitions)]
 
+mod assets;
+pub use assets::*;
 mod auth;
 pub use auth::*;
 mod instances;
