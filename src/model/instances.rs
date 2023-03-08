@@ -99,14 +99,14 @@ pub struct Instance {
 	/// The region that the instance is running in
 	pub region: InstanceRegion,
 	#[serde(rename = "secureName")]
-	/// ... name of the instance, but secure.._
+	/// ... name of the instance, but secure..?
 	pub secure_name: String,
 	/// ...shorter name for the instance?
 	pub short_name: Option<String>,
 	/// Tags for the instance
-	pub tags: Vec<crate::model::Tag>,
+	pub tags: Vec<String>,
 	#[serde(rename = "type")]
-	/// Who can join the instance
+	/// Who can join the instance, also called instance type
 	pub privacy: InstancePrivacy,
 	/// Will be offline on User profiles if not friends with the creator
 	pub world_id: crate::id::OfflineOr<crate::id::World>,

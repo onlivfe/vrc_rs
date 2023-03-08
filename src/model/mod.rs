@@ -2,7 +2,12 @@
 
 // Can't do much about API types
 #![allow(clippy::struct_excessive_bools)]
+// Re-exporting the module contents from this module,
+// so it makes sense to add pre/postfixes to the names
+#![allow(clippy::module_name_repetitions)]
 
+mod auth;
+pub use auth::*;
 mod instances;
 pub use instances::*;
 mod notifications;
@@ -10,8 +15,6 @@ pub use notifications::*;
 mod users;
 use serde::{Deserialize, Serialize};
 pub use users::*;
-mod tags;
-pub use tags::*;
 
 /// A generic success status response
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]

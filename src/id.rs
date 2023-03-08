@@ -24,8 +24,8 @@ macro_rules! add_id {
 		///
 		/// ```
 		#[doc = concat!("use vrc::id::", stringify!($name), ";")]
-		#[doc = concat!("let id1 = ", stringify!($name), "::try_from(\"totally-legit-id\").unwrap();")]
-		#[doc = concat!("let id2 = ", stringify!($name), "::try_from(\"other-legit-id\").unwrap();")]
+		#[doc = concat!("let id1 = \"totally-legit-id\".parse::<", stringify!($name), ">().unwrap();")]
+		#[doc = concat!("let id2 = \"other-totally-legit-id\".parse::<", stringify!($name), ">().unwrap();")]
 		/// assert!(id1 != id2);
 		/// ```
 		#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
@@ -47,18 +47,11 @@ macro_rules! add_id {
 			}
 		}
 
-		impl TryFrom<String> for $name {
-			type Error = &'static str;
-			fn try_from(v: String) -> Result<Self, Self::Error> {
-				Ok($name(v))
-			}
-		}
+		impl std::str::FromStr for $name {
+			type Err = &'static str;
 
-		/// For easier scripting, should use String otherwise.
-		impl TryFrom<&'static str> for $name {
-			type Error = &'static str;
-			fn try_from(v: &'static str) -> Result<Self, Self::Error> {
-				Self::try_from(v.to_owned())
+			fn from_str(v: &str) -> Result<Self, Self::Err> {
+				Ok(Self(v.to_owned()))
 			}
 		}
 
@@ -112,9 +105,9 @@ pub enum OfflineOrPrivateOr<T> {
 /// # Example usage
 ///
 /// ```
-/// let id1 = vrc::id::User::try_from("totally-legit-id").unwrap();
+/// let id1 = "totally-legit-id".parse::<vrc::id::User>().unwrap();
 /// let id1: vrc::id::Any = id1.into();
-/// let id2 = vrc::id::Instance::try_from("totally-legit-id").unwrap();
+/// let id2 = "totally-legit-id".parse::<vrc::id::Instance>().unwrap();
 /// let id2: vrc::id::Any = id2.into();
 /// assert!(id1 != id2);
 /// ```

@@ -10,7 +10,7 @@ pub struct User {
 	pub id: crate::id::User,
 }
 
-impl Queryable<Authentication, crate::model::User> for User {
+impl Queryable<Authentication, crate::model::AnyUser> for User {
 	fn url(&self, _: &Authentication) -> String {
 		format!("{}/users/{}", crate::API_BASE_URI, self.id.as_ref())
 	}

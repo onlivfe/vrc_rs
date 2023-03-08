@@ -7,7 +7,7 @@ mod common;
 async fn friends() -> Result<(), ApiError> {
 	let api_client = common::api_client();
 
-	let query = vrc::query::ListFriends;
+	let query = vrc::query::ListFriends::default();
 	let friends: Vec<vrc::model::Friend> = api_client.query(query).await?;
 
 	dbg!(&friends);

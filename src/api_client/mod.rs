@@ -28,8 +28,9 @@ use governor::{
 };
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 pub use racal::reqwest::{ApiClient, ApiError};
-use racal::FromApiState;
-use reqwest::{header::HeaderMap, Client, RequestBuilder};
+use racal::{FromApiState, Queryable};
+use reqwest::{header::HeaderMap, Client, RequestBuilder, Response};
+use serde::de::DeserializeOwned;
 
 use crate::{
 	model::{
@@ -94,6 +95,20 @@ impl racal::reqwest::ApiClient<Authentication> for AuthenticatedVRC {
 	) -> Result<RequestBuilder, racal::reqwest::ApiError> {
 		self.rate_limiter.until_ready().await;
 		Ok(req)
+	}
+
+	async fn handle_response<ReturnType, FromState, QueryableType>(
+		&self, queryable: QueryableType, response: Response,
+	) -> Result<ReturnType, ApiError>
+	where
+		ReturnType: DeserializeOwned,
+		FromState: FromApiState<Authentication>,
+		QueryableType: Queryable<FromState, ReturnType> + Send + Sync,
+	{
+		let response = response.error_for_status()?;
+		let val = response.bytes().await?;
+		dbg!(std::str::from_utf8(&val)).ok();
+		Ok(queryable.deserialize(&val)?)
 	}
 }
 

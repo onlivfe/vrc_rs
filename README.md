@@ -49,9 +49,10 @@ So only some of the behavior is actually tested, though improvements to it are w
 
 ### Creating a user session manually
 
-Getting the authentication for VRC takes a few steps due to it's janky usage of cookies, and 2fa requiring another request.
+Getting the authentication for VRC takes a few steps due to it's usage of cookies, and 2fa requiring another request.
 
 You can use the `get_auth.py` script for convenience.
+It's in python since it was created before the proper typed rust API client was ready.
 
 ### Running ignored tests
 

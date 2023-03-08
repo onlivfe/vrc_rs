@@ -15,7 +15,9 @@ impl Queryable<Authenticating, crate::model::LoginResponseOrCurrentUser>
 	}
 }
 
-impl Queryable<Authentication, crate::model::CurrentUser> for GetCurrentUser {
+impl Queryable<Authentication, crate::model::CurrentAccount>
+	for GetCurrentUser
+{
 	fn url(&self, _: &Authentication) -> String {
 		format!("{}/auth/user", crate::API_BASE_URI)
 	}
@@ -93,7 +95,7 @@ pub struct DeleteAccount {
 	pub id: crate::id::User,
 }
 
-impl Queryable<Authentication, crate::model::CurrentUser> for DeleteAccount {
+impl Queryable<Authentication, crate::model::CurrentAccount> for DeleteAccount {
 	fn url(&self, _: &Authentication) -> String {
 		format!("{}/users/{}/delete", crate::API_BASE_URI, self.id.as_ref())
 	}
