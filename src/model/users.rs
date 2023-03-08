@@ -1,6 +1,6 @@
 use either::Either;
 use serde::{Deserialize, Serialize};
-use time::{serde::rfc3339, Date, OffsetDateTime};
+use time::{serde::rfc3339, OffsetDateTime};
 use url::Url;
 
 use crate::id::{OfflineOr, OfflineOrPrivateOr};
@@ -79,6 +79,7 @@ impl Default for UserState {
 #[serde(rename_all = "camelCase")]
 /// The status of an user
 pub enum UserStatus {
+	/// Also known as gray
 	Offline,
 	/// Also known as green
 	Active,
