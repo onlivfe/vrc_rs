@@ -149,6 +149,19 @@ pub struct Presence {
 	pub world: crate::id::OfflineOr<String>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+/// Presence details for the authenticated account
+pub struct PastDisplayName {
+	/// The display name itself
+	pub display_name: String,
+	/// When the entry was updated
+	pub updated_at: OffsetDateTime,
+	/// If the display name change has been reverted
+	#[serde(default)]
+	pub reverted: bool,
+}
+
 #[serde_with::serde_as]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -241,7 +254,7 @@ pub struct CurrentAccountData {
 	pub oculus_id: String,
 	#[serde(default)]
 	/// Can be empty
-	pub past_display_names: Vec<Either<Presence, String>>,
+	pub past_display_names: Vec<Either<PastDisplayName, String>>,
 	/// If hasn't set status yet
 	pub status_first_time: bool,
 	/// History of statuses (VRC pre-populates some for new accounts)

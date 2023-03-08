@@ -6,6 +6,12 @@ Note that these might not be kept up to date, check the commit dates & prefer re
 
 For other community resources on the API, see the [vrchatapi project](https://vrchatapi.github.io/docs/api/).
 
+The d2 source files can be converted to a graph like so:
+
+```sh
+d2 users.d2 users.svg --layout=elk --theme 8
+```
+
 ## User information
 
 ![Graph](./users.svg)
