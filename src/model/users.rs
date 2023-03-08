@@ -1,6 +1,6 @@
 use either::Either;
 use serde::{Deserialize, Serialize};
-use time::{serde::rfc3339, OffsetDateTime};
+use time::{serde::rfc3339, Date, OffsetDateTime};
 use url::Url;
 
 use crate::id::{OfflineOr, OfflineOrPrivateOr};
@@ -79,6 +79,7 @@ impl Default for UserState {
 #[serde(rename_all = "camelCase")]
 /// The status of an user
 pub enum UserStatus {
+	Offline,
 	/// Also known as green
 	Active,
 	#[serde(rename = "join me")]
@@ -122,8 +123,11 @@ pub enum FriendRequestStatus {
 /// Presence details for the authenticated account
 pub struct Presence {
 	/// The URL of the avatar's thumbnail
-	pub avatar_thumbnail: Url,
+	pub avatar_thumbnail: Option<Url>,
+	#[serde(default)]
 	/// The display name of the user
+	///
+	/// Can be empty string if missing
 	pub display_name: String,
 	/// The groups that the user is in
 	pub groups: Vec<serde_json::Value>,
@@ -131,9 +135,15 @@ pub struct Presence {
 	pub id: crate::id::User,
 	/// The instance that the user is in
 	pub instance: crate::id::OfflineOr<crate::id::Instance>,
-	/// The instance type that the user is in
+	#[serde(default)]
+	/// The instance type that the user is in.
+	///
+	/// Can be empty string if missing.
 	pub instance_type: String,
-	/// The platform that the user is on
+	#[serde(default)]
+	/// The platform that the user is on.
+	///
+	/// Can be empty string if missing.
 	pub platform: String,
 	/// The user's own picture to replace the avatar pic with
 	#[serde(default)]
@@ -155,6 +165,7 @@ pub struct Presence {
 pub struct PastDisplayName {
 	/// The display name itself
 	pub display_name: String,
+	#[serde(with = "rfc3339")]
 	/// When the entry was updated
 	pub updated_at: OffsetDateTime,
 	/// If the display name change has been reverted
@@ -266,11 +277,10 @@ pub struct CurrentAccountData {
 	pub steam_id: String,
 	/// If 2FA is enabled
 	pub two_factor_auth_enabled: bool,
-	// TODO: combine with option, #[serde(with = "rfc3339")]
 	#[serde(default)]
-	#[serde_as(as = "serde_with::NoneAsEmptyString")]
+	#[serde(with = "rfc3339::option")]
 	/// When 2FA was enabled
-	pub two_factor_auth_enabled_date: Option<String>,
+	pub two_factor_auth_enabled_date: Option<OffsetDateTime>,
 	/// If unsubscribed from marketing emails probably
 	pub unsubscribe: bool,
 	#[serde(default)]
@@ -375,10 +385,9 @@ pub struct User {
 	pub base: AccountData,
 	/// If the user has avatar cloning on
 	pub allow_avatar_copying: bool,
-	#[serde(rename = "date_joined")]
-	// TODO: use time::Date
+	#[serde(rename = "date_joined", with = "crate::date_format")]
 	/// When the user joined VRC
-	pub date_joined: String,
+	pub date_joined: time::Date,
 	/// The friend request status with this user
 	pub friend_request_status: FriendRequestStatus,
 	/// Notes about the user

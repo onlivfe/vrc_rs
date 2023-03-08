@@ -1,0 +1,73 @@
+
+
+UnityPackageSupports: {
+  shape: class
+
+	platform: String
+	unity_version: String
+}
+
+UnityPackage: {
+	shape: class
+
+	asset_url: Url
+	asset_version: u32
+	created_at: OffsetDateTime
+	id: crate::id::UnityPackage
+	unity_sort_number: u64
+}
+UnityPackage -> UnityPackageSupports
+
+
+WorldData: {
+	shape: class
+
+	author_id: crate::id::User
+	author_name: String
+	capacity: u16
+	created_at: OffsetDateTime
+	favorites: u64
+	heat: u32
+	id: crate::id::World
+	image_url: Url
+	labs_publication_date: OffsetDateTime
+	name: String
+	occupants: u32
+	organization: String
+	popularity: u32
+	preview_youtube_id: Option<String>
+	publication_date: OffsetDateTime
+	release_status: ReleaseStatus
+	tags: Vec<String>
+	thumbnail_image_url: Url
+	updated_at: OffsetDateTime
+	visits: u64
+}
+
+WorldListing: {
+	shape: class
+
+	unity_packages: Vec<UnityPackageSupports>
+}
+WorldListing -> WorldData
+WorldListing -- UnityPackageSupports: "unity_packages" {
+	source-arrowhead.label: 1
+	target-arrowhead.label: *
+}
+
+
+World: {
+	shape: class
+
+	featured: bool
+	instances: Vec<(id::Instace, u16)>
+	private_occupants: u32
+	public_occupants: u32
+	unity_packages: Vec<UnityPackage>
+	version: u32
+}
+World -> WorldData
+World -- UnityPackage: "unity_packages" {
+	source-arrowhead.label: 1
+	target-arrowhead.label: *
+}

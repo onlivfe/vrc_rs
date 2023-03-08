@@ -12,6 +12,14 @@ The d2 source files can be converted to a graph like so:
 d2 users.d2 users.svg --layout=elk --theme 8
 ```
 
-## User information
+## Users
 
 ![Graph](./users.svg)
+
+## Worlds
+
+![Graph](./worlds.svg)
+
+## Instances
+
+![Graph](./instances.svg)

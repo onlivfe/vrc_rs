@@ -28,6 +28,7 @@ api_client = ["reqwest", "governor", "percent-encoding", "base64", "async-trait"
 serde = { version = "1.0", features = ["derive"] }
 serde_with = { version = "2.1", features = ["time_0_3"] }
 time = { version = "0.3", default-features = false, features = [
+	"macros",
 	"serde-well-known",
 ] }
 serde_json = { version = "1" }

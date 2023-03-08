@@ -27,12 +27,12 @@ There's quite a bit missing, PRs are welcome to improve the situation, even beyo
 | Partial | Friends | Implementation soon |
 | None | Groups | None, at least in the near term |
 | None | Invites | Listing invites only |
-| Partial models only | Instances | Implementation soon |
+| Partial | Instances | Implementation soon |
 | None | Notifications | Eventual implementation |
 | None | Permissions | None |
 | None | System | Eventual implementation of system statistics |
 | Partial | Users | Planned to be implemented soon |
-| None | Worlds | None, at least in the near term |
+| Partial | Worlds | None, at least in the near term |
 
 The categories are from the awesome [VRChat API Docs](https://vrchatapi.github.io/docs/api/) project.
 

@@ -85,7 +85,7 @@ CurrentAccountData -- PastDisplayName: "past_display_names" {
 Presence: {
   shape: class
 
-  avatar_thumbnail: Url
+  avatar_thumbnail: Option<Url>
   display_name: String
   groups: Vec<serde_json::Value>
   id: id::User

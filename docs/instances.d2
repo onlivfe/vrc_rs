@@ -1,0 +1,38 @@
+
+
+PlatformUserCounts: {
+  shape: class
+
+	android: u32
+	standalonewindows: u32
+}
+
+InstanceData: {
+	shape: class
+
+    active: bool
+    can_request_invite: bool
+    capacity: u16
+    client_number: String
+    full: bool
+    id: id::WorldInstance
+    instance_id: id::Instance
+    location: String
+    n_users: u16
+    name: String
+    owner_id: Option<id::User>
+    permanent: bool
+    photon_region: InstanceRegion
+    platforms: PlatformUserCounts
+    region: InstanceRegion
+    secure_name: String
+    short_name: String
+    strict: bool
+    tags: Vec<String>
+    type: InstancePrivacy
+    world_id: id::World
+}
+InstanceData -- PlatformUserCounts: "platforms" {
+	source-arrowhead.label: 1
+	target-arrowhead.label: 1
+}

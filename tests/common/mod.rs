@@ -17,6 +17,7 @@ const USER_AGENT: &str = concat!(
 pub struct TestConfig {
 	pub friend_id: Option<vrc::id::User>,
 	pub self_id: Option<vrc::id::User>,
+	pub world_id: Option<vrc::id::World>,
 }
 
 pub static TEST_CONFIG: Lazy<TestConfig> = Lazy::new(|| {

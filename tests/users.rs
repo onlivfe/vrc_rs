@@ -1,3 +1,5 @@
+#![cfg(feature = "api_client")]
+
 use vrc::api_client::{ApiClient, ApiError};
 
 mod common;

@@ -19,13 +19,14 @@
 #![deny(clippy::cargo)]
 #![warn(missing_docs)]
 #![deny(rustdoc::invalid_html_tags)]
-#![warn(rustdoc::missing_doc_code_examples)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
 // My project my choice, tabs are literally made for indentation, spaces not.
 #![allow(clippy::tabs_in_doc_comments)]
 // Not much can be done about it :/
 #![allow(clippy::multiple_crate_versions)]
+// time macro causes warnings :/
+#![allow(clippy::redundant_pub_crate)]
 
 pub mod id;
 pub mod model;
@@ -35,6 +36,8 @@ pub mod query;
 pub const API_BASE_URI: &str = "https://vrchat.com/api/1";
 /// VRC API for some reason uses a static cookie key for requests
 pub const API_KEY: &str = "JlE5Jldo5Jibnk5O5hTx6XVqsJu4WJ26";
+
+time::serde::format_description!(date_format, Date, "[year]-[month]-[day]");
 
 #[cfg(feature = "api_client")]
 pub mod api_client;

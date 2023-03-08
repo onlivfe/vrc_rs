@@ -49,19 +49,16 @@ pub enum InstanceCreatorId {
 	Friends(crate::id::User),
 	/// The instance type is Invite or Invite Plus
 	Private(crate::id::User),
-	#[serde(other)]
-	/// The instance creator ID is missing
-	None,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 /// How many users are on each platform
 pub struct InstancePlatformUserCounter {
 	/// How many quest users there are
-	pub android: u32,
+	pub android: u16,
 	/// How many desktop users there are
 	#[serde(rename = "standalonewindows")]
-	pub windows: u32,
+	pub windows: u16,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
@@ -76,10 +73,10 @@ pub struct Instance {
 	pub capacity: u32,
 	/// If the instance is considered to be filled to the user capacity or not
 	pub full: bool,
-	#[serde(rename = "id")]
-	/// Set to offline if on an user profile that the authenticated user is not
-	/// friends with
-	pub instance_id: crate::id::OfflineOr<crate::id::Instance>,
+	/// The ID of the world & instance
+	pub id: crate::id::WorldInstance,
+	/// The ID of the instance
+	pub instance_id: crate::id::Instance,
 	#[serde(rename = "n_users")]
 	/// How many users are currently in the instance
 	pub user_count: u32,
@@ -87,15 +84,13 @@ pub struct Instance {
 	pub name: String,
 	/// The ID of the instance's owner
 	pub owner_id: Option<crate::id::User>,
-	/// If the instance is supposedly permanent?
+	/// If the instance is supposedly permanent
 	pub permanent: bool,
 	/// Apparently the photon region can theoretically be different than the
 	/// actual region?
-	#[serde(rename = "photonRegion")]
 	pub photon_region: InstanceRegion,
 	/// How many users there are on each platform
 	pub platforms: InstancePlatformUserCounter,
-	#[serde(rename = "region")]
 	/// The region that the instance is running in
 	pub region: InstanceRegion,
 	#[serde(rename = "secureName")]
@@ -108,10 +103,10 @@ pub struct Instance {
 	#[serde(rename = "type")]
 	/// Who can join the instance, also called instance type
 	pub privacy: InstancePrivacy,
-	/// Will be offline on User profiles if not friends with the creator
-	pub world_id: crate::id::OfflineOr<crate::id::World>,
+	/// The ID of the world that the instance is running
+	pub world_id: crate::id::World,
 	/// An ID of the world creator that only exists if current user is treated
 	/// as the creator
-	#[serde(flatten)]
-	pub creator_details: InstanceCreatorId,
+	#[serde(flatten, default)]
+	pub creator_details: Option<InstanceCreatorId>,
 }

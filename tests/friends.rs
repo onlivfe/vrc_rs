@@ -1,3 +1,5 @@
+#![cfg(feature = "api_client")]
+
 use vrc::api_client::{ApiClient, ApiError};
 
 mod common;
@@ -7,7 +9,8 @@ mod common;
 async fn friends() -> Result<(), ApiError> {
 	let api_client = common::api_client();
 
-	let query = vrc::query::ListFriends::default();
+	let mut query = vrc::query::ListFriends::default();
+	query.pagination.limit = 1;
 	let friends: Vec<vrc::model::Friend> = api_client.query(query).await?;
 
 	dbg!(&friends);
