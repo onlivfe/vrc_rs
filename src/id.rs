@@ -143,7 +143,7 @@ pub enum Any {
 	Instance(Instance),
 	/// A world ID
 	World(World),
-	/// An ID for a Unity package
+	/// An ID for an Unity package
 	UnityPackage(UnityPackage),
 }
 

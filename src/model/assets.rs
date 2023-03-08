@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-/// Information about a Unity package
+/// Information about an Unity package
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UnityPackage {
@@ -17,7 +17,7 @@ pub struct UnityPackage {
 pub struct World {
 	// TODO: Add all fields
 	/// The ID of the avatar
-	pub id: crate::id::Avatar,
+	pub id: crate::id::World,
 }
 
 /// Information about a VRC avatar
@@ -26,5 +26,5 @@ pub struct World {
 pub struct Avatar {
 	// TODO: Add all fields
 	/// The ID of the world
-	pub id: crate::id::World,
+	pub id: crate::id::Avatar,
 }
