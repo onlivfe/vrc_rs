@@ -7,7 +7,7 @@ authors = ["ljoonal"]
 description = "Unofficial rust types of VRChat's API"
 repository = "https://github.com/onlivfe/vrc_rs"
 documentation = "https://docs.rs/vrc"
-keywords = ["vrc", "vrchat", "api", "rest"]
+keywords = ["vrc", "vrchat", "api", "socialvr"]
 categories = ["api-bindings", "games"]
 
 include = ["src", "Cargo.toml", "LICENSE", "README.md"]
