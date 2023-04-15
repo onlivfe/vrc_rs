@@ -1,6 +1,6 @@
 [package]
 name = "vrc"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MPL-2.0"
 authors = ["ljoonal"]
@@ -22,7 +22,7 @@ path = "src/lib.rs"
 [features]
 
 default = []
-api_client = ["reqwest", "governor", "percent-encoding", "base64", "async-trait"]
+api_client = ["racal/reqwest", "reqwest", "governor", "percent-encoding", "base64", "async-trait"]
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -35,8 +35,8 @@ serde_json = { version = "1" }
 strum = { version = "0.24", features = ["derive"] }
 
 # API client specifics
-racal = { version = "0.3.3", features = ["reqwest"] }
-#racal = { path = "../racal", features = ["reqwest"] }
+racal = "0.3.3"
+#racal = { path = "../racal" }
 governor = { version = "0.5", optional = true }
 tokio = { version = "1", optional = true}
 percent-encoding  = { version = "2.2", optional = true}
