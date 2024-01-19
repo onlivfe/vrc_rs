@@ -7,7 +7,7 @@ mod common;
 #[tokio::test]
 #[ignore]
 async fn current_user() -> Result<(), ApiError> {
-	let api_client = common::api_client();
+	let api_client = common::api_client()?;
 
 	let query = vrc::query::GetCurrentUser;
 	let current_user: vrc::model::CurrentAccount =

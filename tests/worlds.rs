@@ -10,7 +10,7 @@ mod common;
 #[tokio::test]
 #[ignore]
 async fn active_worlds() -> Result<(), ApiError> {
-	let api_client = common::api_client();
+	let api_client = common::api_client()?;
 
 	let query = vrc::query::ActiveWorlds::default();
 	let active_worlds: Vec<WorldListing> = api_client.query(query).await?;
@@ -30,7 +30,7 @@ async fn world() -> Result<(), ApiError> {
 		None => return Ok(()),
 	};
 
-	let api_client = common::api_client();
+	let api_client = common::api_client()?;
 
 	let query = vrc::query::World { id: world_id.clone() };
 	let world: World = api_client.query(query).await?;
