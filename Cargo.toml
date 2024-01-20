@@ -40,7 +40,7 @@ percent-encoding = { version = "2", optional = true }
 base64 = { version = "0.21", optional = true }
 
 async-trait = { version = "0.1", optional = true }
-either = { version = "1", features = ["serde"] }
+# either = { version = "1", features = ["serde"] }
 url = { version = "2", features = ["serde"] }
 [dependencies.reqwest]
 optional = true
