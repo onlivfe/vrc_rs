@@ -1,4 +1,3 @@
-use either::Either;
 use serde::{Deserialize, Serialize};
 use time::{serde::rfc3339, OffsetDateTime};
 use url::Url;
