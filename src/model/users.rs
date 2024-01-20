@@ -394,13 +394,13 @@ pub struct CurrentAccount {
 	/// When the entry was updated
 	#[serde(rename = "updated_at", with = "rfc3339")]
 	pub updated_at: OffsetDateTime,
-	/// The current avatar id
+	/// The current avatar id or empty string.
 	#[serde(default)]
 	pub current_avatar: String,
-	/// The current avatar tags
+	/// The current avatar tags or empty string.
 	#[serde(default)]
 	pub current_avatar_tags: serde_json::Value,
-	/// The fallback avatar id
+	/// The fallback avatar id or empty string.
 	#[serde(default)]
 	pub fallback_avatar: String,
 }
