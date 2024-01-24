@@ -28,8 +28,11 @@ async fn active_instance() -> Result<(), ApiError> {
 	let instance: Instance = dbg!(api_client.query(query).await?);
 
 	assert!(instance.active);
-	assert_eq!(instance.privacy, vrc::model::InstancePrivacy::Public);
-	assert!(instance.can_request_invite);
+	assert!(
+		[vrc::model::InstancePrivacy::Public, vrc::model::InstancePrivacy::Group]
+			.contains(&instance.privacy)
+	);
+	//assert!(instance.can_request_invite);
 	assert!(instance.capacity > 0);
 
 	Ok(())

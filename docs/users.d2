@@ -29,14 +29,15 @@ FriendData: {
 
   friend_key: String
   last_login: OffsetDateTime
-  traveling_to_location: OfflineOrPrivateOr<String>
+  #traveling_to_location: OfflineOrPrivateOr<String>
 	location: id::OfflineOrPrivateOr<String>
 }
 
 Friend: {
   shape: class
 
-	fallback_avatar: id::Avatar
+	#fallback_avatar: id::Avatar
+	image_url: Url
 }
 Friend -> AccountData
 Friend -> FriendData

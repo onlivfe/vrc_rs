@@ -9,6 +9,7 @@ import http.client
 import re
 import json
 import getpass
+import re
 
 API_KEY = "JlE5Jldo5Jibnk5O5hTx6XVqsJu4WJ26"
 USER_AGENT = "vrc_rs-get_auth.py/0.0.0 (at ljoonal)"
@@ -31,7 +32,7 @@ else:
     conn.request("GET", "/api/1/auth/user", headers=basic_auth_headers)
     #print("Reading response")
     resp = conn.getresponse()
-    print("Response " + str(resp.status) + ": " + resp.reason)
+    print("API response code " + str(resp.status) + ": " + resp.reason)
     #print("Headers:")
     headers = resp.getheaders()
     #print(headers)
@@ -40,11 +41,14 @@ else:
     #print(data)
     json_data = json.loads(data)
 
-    if json_data["requiresTwoFactorAuth"]:
+    if "requiresTwoFactorAuth" in json_data:
         if "emailOtp" in json_data["requiresTwoFactorAuth"]:
             REQUIRED_SECOND_FACTOR_TYPE = "emailotp"
         else:
             REQUIRED_SECOND_FACTOR_TYPE = "totp"
+    elif "error" in json_data:
+        if re.match(r"email", json_data["error"]["message"]):
+            REQUIRED_SECOND_FACTOR_TYPE = "emailotp"
 
     # No handling for multiple set-cookie headers...yet.
     auth_cookie = next((

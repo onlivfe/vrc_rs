@@ -53,6 +53,8 @@ Getting the authentication for VRC takes a few steps due to it's usage of cookie
 
 You can use the `get_auth.py` script for convenience.
 It's in python since it was created before the proper typed rust API client was ready.
+Note that you should've have logged in from the same IP address previously,
+as VRChat handles logins from new IPs differently which just breaks everything.
 
 ### Running ignored tests
 

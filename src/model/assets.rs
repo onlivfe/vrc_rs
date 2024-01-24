@@ -62,8 +62,8 @@ pub struct WorldData {
 	/// An image for displaying the world
 	pub image_url: Url,
 	/// When the world was published to labs
-	#[serde(with = "rfc3339")]
-	pub labs_publication_date: OffsetDateTime,
+	//#[serde(with = "rfc3339")]
+	//pub labs_publication_date: OffsetDateTime,
 	/// The name of the world
 	pub name: String,
 	/// How many users are in instances of the world

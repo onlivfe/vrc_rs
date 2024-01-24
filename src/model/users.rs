@@ -299,8 +299,8 @@ pub struct FriendData {
 	/// Either a date-time or empty string.
 	#[serde(rename = "last_login", with = "rfc3339")]
 	pub last_login: OffsetDateTime,
-	/// If the user is traveling to somewhere
-	pub traveling_to_location: OfflineOrPrivateOr<String>,
+	// If the user is traveling to somewhere
+	//pub traveling_to_location: OfflineOrPrivateOr<String>,
 	/// The location of the friend
 	// Not included for users since itd always just be "offline"
 	pub location: OfflineOrPrivateOr<crate::id::Instance>,
@@ -373,8 +373,10 @@ pub struct Friend {
 	/// Data about the friend
 	#[serde(flatten)]
 	pub friend: FriendData,
-	/// The fallback avatar's ID
-	pub fallback_avatar: crate::id::Avatar,
+	// The fallback avatar's ID
+	//pub fallback_avatar: crate::id::Avatar,
+	/// The user's image
+	pub image_url: Url,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]

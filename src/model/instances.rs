@@ -11,6 +11,8 @@ pub enum InstancePrivacy {
 	FriendsOfFriends,
 	/// Friends only
 	Friends,
+	/// A Group instance
+	Group,
 	/// Invite or Invite Plus
 	Private,
 }
