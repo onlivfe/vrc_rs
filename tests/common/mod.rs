@@ -3,6 +3,7 @@
 #![allow(dead_code)]
 
 use once_cell::sync::Lazy;
+use racal::reqwest::ApiError;
 use vrc::{api_client::AuthenticatedVRC, query::Authentication};
 
 const USER_AGENT: &str = concat!(
@@ -42,6 +43,6 @@ pub static USER_AUTH: Lazy<Authentication> = Lazy::new(|| {
 	user_auth
 });
 
-pub fn api_client() -> Result<AuthenticatedVRC> {
-	AuthenticatedVRC::new(USER_AGENT.to_owned(), USER_AUTH.clone())?
+pub fn api_client() -> Result<AuthenticatedVRC, ApiError> {
+	AuthenticatedVRC::new(USER_AGENT.to_owned(), USER_AUTH.clone())
 }
