@@ -13,7 +13,7 @@ pub use auth::*;
 mod instances;
 pub use instances::*;
 mod notifications;
-pub use notifications::*;
+//pub use notifications::*;
 mod users;
 use serde::{Deserialize, Serialize};
 pub use users::*;
