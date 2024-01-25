@@ -62,8 +62,12 @@ pub struct WorldData {
 	/// An image for displaying the world
 	pub image_url: Url,
 	/// When the world was published to labs
-	//#[serde(with = "rfc3339")]
-	//pub labs_publication_date: OffsetDateTime,
+	#[serde(
+		default,
+		deserialize_with = "crate::deserialize_optional_date",
+		serialize_with = "rfc3339::option::serialize"
+	)]
+	pub labs_publication_date: Option<OffsetDateTime>,
 	/// The name of the world
 	pub name: String,
 	/// How many users are in instances of the world
@@ -79,9 +83,12 @@ pub struct WorldData {
 	#[serde(default)]
 	pub preview_youtube_id: Option<String>,
 	/// When the world was published
-	// TODO: Check that exists for labs worlds
-	#[serde(with = "rfc3339")]
-	pub publication_date: OffsetDateTime,
+	#[serde(
+		default,
+		deserialize_with = "crate::deserialize_optional_date",
+		serialize_with = "rfc3339::option::serialize"
+	)]
+	pub publication_date: Option<OffsetDateTime>,
 	/// The release status of the world
 	pub release_status: ReleaseStatus,
 	/// The tags of the world

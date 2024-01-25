@@ -1,5 +1,5 @@
 #![doc(html_logo_url = "https://github.com/onlivfe/vrc_rs/raw/main/logo.png")]
-//! Typed models for VRChat's API.
+//! Typed models for `VRChat`'s API.
 //!
 //! This is fully work in progress, and published to be able to already setup the dependencies for [onlivfe](https://onlivfe.com).
 //!
@@ -28,6 +28,8 @@
 // time macro causes warnings :/
 #![allow(clippy::redundant_pub_crate)]
 
+use serde::{Deserialize, Deserializer};
+
 pub mod id;
 pub mod model;
 pub mod query;
@@ -41,3 +43,37 @@ time::serde::format_description!(date_format, Date, "[year]-[month]-[day]");
 
 #[cfg(feature = "api_client")]
 pub mod api_client;
+
+/// Deals with the literal string `"none"` as `None`
+fn deserialize_optional_date<'de, D>(
+	deserializer: D,
+) -> Result<Option<time::OffsetDateTime>, D::Error>
+where
+	D: Deserializer<'de>,
+{
+	use time::serde::rfc3339;
+	#[derive(Deserialize)]
+	#[serde(untagged)]
+	enum MaybeNone {
+		#[serde(with = "rfc3339::option")]
+		Value(Option<time::OffsetDateTime>),
+		NoneString(String),
+	}
+
+	// deserialize into local enum
+	let value: MaybeNone = Deserialize::deserialize(deserializer)?;
+	match value {
+		// if parsed as T or None, return that
+		MaybeNone::Value(value) => Ok(value),
+
+		// otherwise, if value is string an "n/a", return None
+		// (and fail if it is any other string)
+		MaybeNone::NoneString(string) => {
+			if string == "none" {
+				Ok(None)
+			} else {
+				Err(serde::de::Error::custom("Unexpected string"))
+			}
+		}
+	}
+}

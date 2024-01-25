@@ -30,13 +30,13 @@ WorldData: {
 	heat: u32
 	id: crate::id::World
 	image_url: Url
-	#labs_publication_date: OffsetDateTime
+	labs_publication_date: Option<OffsetDateTime>
 	name: String
 	occupants: u32
 	organization: String
 	popularity: u32
 	preview_youtube_id: Option<String>
-	publication_date: OffsetDateTime
+	publication_date: Option<OffsetDateTime>
 	release_status: ReleaseStatus
 	tags: Vec<String>
 	thumbnail_image_url: Url
