@@ -233,9 +233,6 @@ pub struct AccountData {
 	#[serde(default)]
 	#[serde_as(as = "serde_with::NoneAsEmptyString")]
 	pub user_icon: Option<Url>,
-	/// When the user joined VRC
-	#[serde(rename = "date_joined", with = "crate::date_format")]
-	pub date_joined: time::Date,
 }
 
 /// Details that get added if the user is the authenticated one
@@ -426,6 +423,9 @@ pub struct User {
 	pub base: AccountData,
 	/// If the user has avatar cloning on
 	pub allow_avatar_copying: bool,
+	/// When the user joined VRC
+	#[serde(rename = "date_joined", with = "crate::date_format")]
+	pub date_joined: time::Date,
 	/// The friend request status with this user
 	pub friend_request_status: FriendRequestStatus,
 	/// Notes about the user
