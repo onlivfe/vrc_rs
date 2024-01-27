@@ -4,6 +4,7 @@ AccountData: {
 	bio: String
 	bio_links: Vec<String>
 	current_avatar_image_url: Url
+	current_avatar_tags: Vec<serde_json::Value>
 	current_avatar_thumbnail_image_url: Url
 	developer_type: DeveloperType
 	display_name: String
@@ -53,6 +54,7 @@ PastDisplayName: {
 CurrentAccountData: {
   shape: class
 
+	accepted_privacy_version: u8
   accepted_tos_version: u8
 	current_avatar_asset_url: Url
 	email_verified: bool
@@ -68,11 +70,15 @@ CurrentAccountData: {
 	obfuscated_email: String
 	obfuscated_pending_email: String
 	oculus_id: String
-	past_display_names: Vec<Either<String, PastDisplayName>>
+	past_display_names: Vec<PastDisplayName>
 	status_first_time: bool
 	status_history: Vec<String>
 	steam_details: serde_json::Value
 	steam_id: String
+	google_id: String
+	oculus_id: String
+	pico_id: String
+	vive_id: String
 	two_factor_auth_enabled: bool
 	two_factor_auth_enabled_date: Option<OffsetDateTime>
 	unsubscribe: bool
@@ -87,26 +93,32 @@ Presence: {
   shape: class
 
   avatar_thumbnail: Option<Url>
+	current_avatar_tags: Vec<serde_json::Value>
   display_name: String
   groups: Vec<serde_json::Value>
   id: id::User
   instance: id::OfflineOr<id::Instance>
   instance_type: String
+	is_rejoining: serde_json::Value
   platform: PlatformType
   profile_pic_override: Option<Url>
   status: UserStatus
 	traveling_to_instance: id::OfflineOrPrivateOr<id::Instance>
 	traveling_to_world: id::OfflineOrPrivateOr<id::World>
-  world: id::OfflineOr<String>
+  user_icon: Option<Url>
+	world: id::OfflineOr<String>
 }
 
 CurrentAccount: {
   shape: class
 
   presence: Presence
+	active_friends: Vec<id::User>
   offline_friends: Vec<id::User>
 	online_friends: Vec<id::User>
 	last_login: OffsetDateTime
+	updated_at: OffsetDateTime
+	current_avatar: String
 	fallback_avatar: id::Avatar
 }
 CurrentAccount -> AccountData

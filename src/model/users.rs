@@ -162,7 +162,7 @@ pub struct Presence {
 	pub is_rejoining: serde_json::Value,
 	/// The current avatar tags
 	#[serde(default)]
-	pub current_avatar_tags: serde_json::Value,
+	pub current_avatar_tags: Vec<serde_json::Value>,
 	/// URL to the user's icon, can be an empty string
 	#[serde(default)]
 	#[serde_as(as = "serde_with::NoneAsEmptyString")]
@@ -187,7 +187,7 @@ pub struct PastDisplayName {
 }
 
 #[serde_with::serde_as]
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Some details about a VRC user
 pub struct AccountData {
@@ -201,6 +201,9 @@ pub struct AccountData {
 	/// The avatar's image, for profile picture see the [profile pic
 	/// override](Self::profile_pic_override)
 	pub current_avatar_image_url: Url,
+	/// The current avatar tags or empty string.
+	#[serde(default)]
+	pub current_avatar_tags: Vec<serde_json::Value>,
 	/// The avatar's smaller image, for profile picture see the [profile pic
 	/// override](Self::profile_pic_override)
 	pub current_avatar_thumbnail_image_url: Url,
@@ -392,16 +395,13 @@ pub struct CurrentAccount {
 	/// The current avatar id or empty string.
 	#[serde(default)]
 	pub current_avatar: String,
-	/// The current avatar tags or empty string.
-	#[serde(default)]
-	pub current_avatar_tags: serde_json::Value,
 	/// The fallback avatar id or empty string.
 	#[serde(default)]
 	pub fallback_avatar: String,
 }
 
 /// Information that's returned about friends
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Friend {
 	/// Base info that's shared across different user responses
