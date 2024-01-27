@@ -325,10 +325,14 @@ pub struct FriendData {
 	/// Either a date-time or empty string.
 	#[serde(rename = "last_login", with = "rfc3339")]
 	pub last_login: OffsetDateTime,
-	// If the user is traveling to somewhere
-	//pub traveling_to_location: OfflineOrPrivateOr<String>,
+}
+
+/// Data that's returned about friends that's returned from the friends and
+/// users endpoints
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserOrFriendData {
 	/// The location of the friend
-	// Not included for users since itd always just be "offline"
 	pub location: OfflineOrPrivateOr<crate::id::Instance>,
 }
 
@@ -344,25 +348,20 @@ pub struct StatusData {
 	pub last_activity: OffsetDateTime,
 }
 
-/// Data that's returned from the users endpoint about friends or the
-/// authenticated user
+/// Data that's returned from the users endpoint about friends,
+/// but not for authenticated user
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct UserStatusData {
-	/// Base status data that's also for current account endpoint
+pub struct FriendUserStatusData {
+	/// The base status data
 	#[serde(flatten)]
 	pub base: StatusData,
+	/// If the user is traveling to somewhere
+	pub traveling_to_location: OfflineOrPrivateOr<String>,
 	/// If the user is traveling to somewhere
 	pub traveling_to_instance: OfflineOrPrivateOr<crate::id::Instance>,
 	/// If the user is traveling to somewhere
 	pub traveling_to_world: OfflineOrPrivateOr<crate::id::World>,
-	/// The location of the friend
-	pub location: OfflineOrPrivateOr<crate::id::Instance>,
-	/// The current instance's ID, or offline
-	// Not included on User since it'd always be "offline"
-	pub instance_id: OfflineOr<crate::id::Instance>,
-	/// The current world's ID
-	pub world_id: OfflineOr<crate::id::World>,
 }
 
 /// Extended details about the current user
@@ -378,6 +377,9 @@ pub struct CurrentAccount {
 	/// Base status data that's also for user endpoint
 	#[serde(flatten)]
 	pub status: StatusData,
+	/// Seems to always be set
+	#[serde(flatten)]
+	pub friend_data: FriendData,
 	/// The presence of self
 	pub presence: Presence,
 	/// Friends that are offline
@@ -386,9 +388,6 @@ pub struct CurrentAccount {
 	pub online_friends: Vec<crate::id::User>,
 	/// Friends that are active
 	pub active_friends: Vec<crate::id::User>,
-	/// Either a date-time or empty string.
-	#[serde(rename = "last_login", with = "rfc3339")]
-	pub last_login: OffsetDateTime,
 	/// When the entry was updated
 	#[serde(rename = "updated_at", with = "rfc3339")]
 	pub updated_at: OffsetDateTime,
@@ -410,6 +409,10 @@ pub struct Friend {
 	/// Data about the friend
 	#[serde(flatten)]
 	pub friend: FriendData,
+	/// Data that's returned for user and friend endpoints but not from current
+	/// user
+	#[serde(flatten)]
+	pub user_or_friend: UserOrFriendData,
 	// The fallback avatar's ID
 	//pub fallback_avatar: crate::id::Avatar,
 	/// The user's image
@@ -423,6 +426,10 @@ pub struct User {
 	/// Base info that's shared across different user responses
 	#[serde(flatten)]
 	pub base: AccountData,
+	/// Data that's returned for user and friend endpoints but not from current
+	/// user
+	#[serde(flatten)]
+	pub user_or_friend: UserOrFriendData,
 	/// If the user has avatar cloning on
 	pub allow_avatar_copying: bool,
 	/// When the user joined VRC
@@ -432,6 +439,10 @@ pub struct User {
 	pub friend_request_status: FriendRequestStatus,
 	/// Notes about the user
 	pub note: String,
+	/// The current instance's ID, or offline
+	pub instance_id: OfflineOr<crate::id::Instance>,
+	/// The current world's ID , pr offline
+	pub world_id: OfflineOr<crate::id::World>,
 }
 
 /// Data that's returned from the user endpoint about the authenticated user
@@ -446,7 +457,7 @@ pub struct CurrentUser {
 	pub account: CurrentAccountData,
 	#[serde(flatten)]
 	/// Status data that's also shown about friends
-	pub status: UserStatusData,
+	pub status: FriendUserStatusData,
 	#[serde(flatten)]
 	/// Data that's shared with friends response
 	pub friend: FriendData,
@@ -464,7 +475,7 @@ pub struct FriendUser {
 	pub base: User,
 	#[serde(flatten)]
 	/// Status data that's also shown about friends
-	pub status: UserStatusData,
+	pub status: FriendUserStatusData,
 	#[serde(flatten)]
 	/// Data that's shared with friends response
 	pub friend: FriendData,
@@ -505,11 +516,11 @@ impl AnyUser {
 
 	#[must_use]
 	/// Borrows the base user struct from whatever kind of user it is
-	pub const fn status(&self) -> Option<&UserStatusData> {
+	pub const fn status(&self) -> &UserStatus {
 		match &self {
-			Self::Authenticated(a) => Some(&a.status),
-			Self::Friend(f) => Some(&f.status),
-			Self::User(_) => None,
+			Self::Authenticated(a) => &a.base.base.status,
+			Self::Friend(f) => &f.base.base.status,
+			Self::User(u) => &u.base.status,
 		}
 	}
 

@@ -1,8 +1,8 @@
 AccountData: {
   shape: class
 
-	bio: String
 	bio_links: Vec<String>
+	bio: String
 	current_avatar_image_url: Url
 	current_avatar_tags: Vec<serde_json::Value>
 	current_avatar_thumbnail_image_url: Url
@@ -13,25 +13,39 @@ AccountData: {
 	last_platform: PlatformType
 	profile_pic_override: Option<Url>
 	status_description: String
+	status: UserStatus
 	tags: Vec<String>
 	user_icon: Option<Url>
-	status: UserStatus
 }
+
+UserOrFriendData: {
+	shape: class
+
+	location: OfflineOrPrivateOr<id::Instance>
+}
+
 
 StatusData: {
 	shape: class
 
-	state: UserState
 	last_activity: OffsetDateTime
+	state: UserState
 }
+
+FriendUserStatusData: {
+	shape: class
+
+	traveling_to_instance: OfflineOrPrivateOr<id::Instance>
+	traveling_to_location: String
+	traveling_to_world: OfflineOrPrivateOr<id::World>
+}
+FriendUserStatusData -> StatusData
 
 FriendData: {
   shape: class
 
   friend_key: String
   last_login: OffsetDateTime
-  #traveling_to_location: OfflineOrPrivateOr<String>
-	location: id::OfflineOrPrivateOr<String>
 }
 
 Friend: {
@@ -42,26 +56,28 @@ Friend: {
 }
 Friend -> AccountData
 Friend -> FriendData
+Friend -> UserOrFriendData
 
 PastDisplayName: {
   shape: class
 
   display_name: String
-  updated_at: OffsetDateTime
   reverted: Option<bool>
+  updated_at: OffsetDateTime
 }
 
 CurrentAccountData: {
   shape: class
 
 	accepted_privacy_version: u8
-  accepted_tos_version: u8
-	current_avatar_asset_url: Url
-	email_verified: bool
-	friend_group_names: Vec<serde_json::Value>
 	account_deletion_date: serde_json::Value
 	account_deletion_log: serde_json::Value
+	current_avatar_asset_url: Url
+	email_verified: bool
+	fallback_avatar: id::Avatar
+	friend_group_names: Vec<serde_json::Value>
 	friends: Vec<id::User>
+	google_id: String
 	has_birthday: bool
 	has_email: bool
 	has_logged_in_from_client: bool
@@ -70,19 +86,19 @@ CurrentAccountData: {
 	obfuscated_email: String
 	obfuscated_pending_email: String
 	oculus_id: String
+	oculus_id: String
 	past_display_names: Vec<PastDisplayName>
+	pico_id: String
 	status_first_time: bool
 	status_history: Vec<String>
 	steam_details: serde_json::Value
 	steam_id: String
-	google_id: String
-	oculus_id: String
-	pico_id: String
-	vive_id: String
-	two_factor_auth_enabled: bool
 	two_factor_auth_enabled_date: Option<OffsetDateTime>
+	two_factor_auth_enabled: bool
 	unsubscribe: bool
 	username: String
+	vive_id: String
+  accepted_tos_version: u8
 }
 CurrentAccountData -- PastDisplayName: "past_display_names" {
 	source-arrowhead.label: 1
@@ -92,36 +108,35 @@ CurrentAccountData -- PastDisplayName: "past_display_names" {
 Presence: {
   shape: class
 
-  avatar_thumbnail: Option<Url>
 	current_avatar_tags: Vec<serde_json::Value>
+	is_rejoining: serde_json::Value
+	traveling_to_instance: id::OfflineOrPrivateOr<id::Instance>
+	traveling_to_world: id::OfflineOrPrivateOr<id::World>
+	world: id::OfflineOr<String>
+  avatar_thumbnail: Option<Url>
   display_name: String
   groups: Vec<serde_json::Value>
   id: id::User
-  instance: id::OfflineOr<id::Instance>
   instance_type: String
-	is_rejoining: serde_json::Value
+  instance: id::OfflineOr<id::Instance>
   platform: PlatformType
   profile_pic_override: Option<Url>
   status: UserStatus
-	traveling_to_instance: id::OfflineOrPrivateOr<id::Instance>
-	traveling_to_world: id::OfflineOrPrivateOr<id::World>
   user_icon: Option<Url>
-	world: id::OfflineOr<String>
 }
 
 CurrentAccount: {
   shape: class
 
-  presence: Presence
 	active_friends: Vec<id::User>
-  offline_friends: Vec<id::User>
-	online_friends: Vec<id::User>
-	last_login: OffsetDateTime
-	updated_at: OffsetDateTime
 	current_avatar: String
-	fallback_avatar: id::Avatar
+	online_friends: Vec<id::User>
+	updated_at: OffsetDateTime
+  offline_friends: Vec<id::User>
+  presence: Presence
 }
 CurrentAccount -> AccountData
+CurrentAccount -> FriendData
 CurrentAccount -> CurrentAccountData
 CurrentAccount -> StatusData
 CurrentAccount -- Presence: "presence" {
@@ -147,41 +162,31 @@ endpoint_current_user -- CurrentAccount {
 User: {
   shape: class
   
+	instance_id: OfflineOrPrivateOr<id::Instance>
+	note: String
+	world_id: OfflineOrPrivateOr<id::World>
   allow_avatar_copying: bool
   date_joined: Date
   friend_request_status: FriendRequestStatus
-	note: String
 }
 User -> AccountData
+User -> UserOrFriendData
 
-UserStatusData: {
-  shape: class
-
-	traveling_to_instance: OfflineOrPrivateOr<id::Instance>
-	traveling_to_world: OfflineOrPrivateOr<id::World>
-	location: OfflineOrPrivateOr<id::Instance>
-	instance_id: OfflineOr<id::Instance>
-	world_id: OfflineOr<id::World>
-}
-UserStatusData -> StatusData
 
 FriendUser: {
   shape: class
-
 }
 FriendUser -> User
 FriendUser -> FriendData
-FriendUser -> UserStatusData
+FriendUser -> FriendUserStatusData
 
 CurrentUser: {
   shape: class
-
-	fallback_avatar: id::Avatar
 }
 CurrentUser -> User
 CurrentUser -> FriendData
 CurrentUser -> CurrentAccountData
-CurrentUser -> UserStatusData
+CurrentUser -> FriendUserStatusData
 
 endpoint_users: Users endpoint
 endpoint_users.shape: cloud
