@@ -7,7 +7,7 @@ mod common;
 #[tokio::test]
 #[ignore]
 async fn friends() -> Result<(), ApiError> {
-	let api_client = common::api_client();
+	let api_client = common::api_client()?;
 
 	let mut query = vrc::query::ListFriends::default();
 	query.pagination.limit = 1;

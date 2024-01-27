@@ -10,7 +10,7 @@ mod common;
 #[tokio::test]
 #[ignore]
 async fn active_instance() -> Result<(), ApiError> {
-	let api_client = common::api_client();
+	let api_client = common::api_client()?;
 
 	let mut query = vrc::query::ActiveWorlds::default();
 	query.pagination.limit = 1;

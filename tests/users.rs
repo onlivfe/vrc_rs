@@ -7,7 +7,7 @@ mod common;
 #[tokio::test]
 #[ignore]
 async fn user_tupper() -> Result<(), ApiError> {
-	let api_client = common::api_client();
+	let api_client = common::api_client()?;
 
 	let query = vrc::query::User {
 		id: "usr_c1644b5b-3ca4-45b4-97c6-a2a0de70d469".parse().unwrap(),
@@ -26,7 +26,7 @@ async fn user_tupper() -> Result<(), ApiError> {
 #[tokio::test]
 #[ignore]
 async fn user_system() -> Result<(), ApiError> {
-	let api_client = common::api_client();
+	let api_client = common::api_client()?;
 
 	let query = vrc::query::User { id: "vF8OwsCETo".parse().unwrap() };
 	let user: vrc::model::AnyUser = api_client.query(query).await?;
@@ -57,7 +57,7 @@ async fn user_self() -> Result<(), ApiError> {
 		None => return Ok(()),
 	};
 
-	let api_client = common::api_client();
+	let api_client = common::api_client()?;
 
 	let query = vrc::query::User { id: friend_id.to_owned() };
 	let user: vrc::model::AnyUser = api_client.query(query).await?;
@@ -88,7 +88,7 @@ async fn user_friend() -> Result<(), ApiError> {
 		None => return Ok(()),
 	};
 
-	let api_client = common::api_client();
+	let api_client = common::api_client()?;
 
 	let query = vrc::query::User { id: friend_id.to_owned() };
 	let user: vrc::model::AnyUser = api_client.query(query).await?;

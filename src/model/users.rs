@@ -1,4 +1,3 @@
-use either::Either;
 use serde::{Deserialize, Serialize};
 use time::{serde::rfc3339, OffsetDateTime};
 use url::Url;
@@ -158,6 +157,19 @@ pub struct Presence {
 	pub traveling_to_world: crate::id::OfflineOrPrivateOr<crate::id::World>,
 	/// The world that the user is in
 	pub world: crate::id::OfflineOr<String>,
+	/// If the user is rejoining the instance
+	#[serde(default)]
+	pub is_rejoining: serde_json::Value,
+	/// The current avatar tags
+	#[serde(default)]
+	pub current_avatar_tags: serde_json::Value,
+	/// URL to the user's icon, can be an empty string
+	#[serde(default)]
+	#[serde_as(as = "serde_with::NoneAsEmptyString")]
+	pub user_icon: Option<Url>,
+	/// What does this do?
+	#[serde(default)]
+	pub debugflag: serde_json::Value,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
@@ -166,8 +178,8 @@ pub struct Presence {
 pub struct PastDisplayName {
 	/// The display name itself
 	pub display_name: String,
-	#[serde(with = "rfc3339")]
 	/// When the entry was updated
+	#[serde(rename = "updated_at", with = "rfc3339")]
 	pub updated_at: OffsetDateTime,
 	/// If the display name change has been reverted
 	#[serde(default)]
@@ -231,6 +243,8 @@ pub struct CurrentAccountData {
 	/// Which version of the TOS the authenticated user has accepted
 	#[serde(rename = "acceptedTOSVersion")]
 	pub accepted_tos_version: u8,
+	/// Which version of the Privacy Policy the authenticated user has accepted
+	pub accepted_privacy_version: u8,
 	/// The URL to the current avatar's asset
 	pub current_avatar_asset_url: Url,
 	/// If the email address of the account has been verified
@@ -258,24 +272,33 @@ pub struct CurrentAccountData {
 	#[serde(default)]
 	/// Can presumably be an empty string
 	pub obfuscated_email: String,
-	#[serde(default)]
 	/// Can be an empty string
+	#[serde(default)]
 	pub obfuscated_pending_email: String,
-	/// Can be an empty string
-	#[serde(default)]
-	pub oculus_id: String,
-	#[serde(default)]
 	/// Can be empty
-	pub past_display_names: Vec<Either<PastDisplayName, String>>,
+	#[serde(default)]
+	pub past_display_names: Vec<PastDisplayName>,
 	/// If hasn't set status yet
 	pub status_first_time: bool,
 	/// History of statuses (VRC pre-populates some for new accounts)
 	pub status_history: Vec<String>,
 	/// Details of the linked steam account
 	pub steam_details: serde_json::Value,
-	#[serde(default)]
 	/// Can be empty
+	#[serde(default)]
 	pub steam_id: String,
+	/// Can be an empty string
+	#[serde(default)]
+	pub google_id: String,
+	/// Can be an empty string
+	#[serde(default)]
+	pub oculus_id: String,
+	/// Can be an empty string
+	#[serde(default)]
+	pub pico_id: String,
+	/// Can be an empty string
+	#[serde(default)]
+	pub vive_id: String,
 	/// If 2FA is enabled
 	pub two_factor_auth_enabled: bool,
 	#[serde(default)]
@@ -358,9 +381,23 @@ pub struct CurrentAccount {
 	pub offline_friends: Vec<crate::id::User>,
 	/// Friends that are online
 	pub online_friends: Vec<crate::id::User>,
+	/// Friends that are active
+	pub active_friends: Vec<crate::id::User>,
 	/// Either a date-time or empty string.
 	#[serde(rename = "last_login", with = "rfc3339")]
 	pub last_login: OffsetDateTime,
+	/// When the entry was updated
+	#[serde(rename = "updated_at", with = "rfc3339")]
+	pub updated_at: OffsetDateTime,
+	/// The current avatar id or empty string.
+	#[serde(default)]
+	pub current_avatar: String,
+	/// The current avatar tags or empty string.
+	#[serde(default)]
+	pub current_avatar_tags: serde_json::Value,
+	/// The fallback avatar id or empty string.
+	#[serde(default)]
+	pub fallback_avatar: String,
 }
 
 /// Information that's returned about friends
@@ -388,8 +425,8 @@ pub struct User {
 	pub base: AccountData,
 	/// If the user has avatar cloning on
 	pub allow_avatar_copying: bool,
-	#[serde(rename = "date_joined", with = "crate::date_format")]
 	/// When the user joined VRC
+	#[serde(rename = "date_joined", with = "crate::date_format")]
 	pub date_joined: time::Date,
 	/// The friend request status with this user
 	pub friend_request_status: FriendRequestStatus,
