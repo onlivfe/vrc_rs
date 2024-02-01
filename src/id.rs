@@ -70,10 +70,11 @@ macro_rules! add_id {
 }
 
 add_id!(Avatar);
-add_id!(User);
+add_id!(Group);
 add_id!(Instance);
-add_id!(World);
 add_id!(UnityPackage);
+add_id!(User);
+add_id!(World);
 
 /// Offline or the id of the world or whatever type T is
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
@@ -137,14 +138,16 @@ impl<T> OfflineOrPrivateOr<T> {
 pub enum Any {
 	/// An avatar ID
 	Avatar(Avatar),
-	/// An user ID
-	User(User),
+	/// An group ID
+	Group(Group),
 	/// An instance ID
 	Instance(Instance),
-	/// A world ID
-	World(World),
 	/// An ID for an Unity package
 	UnityPackage(UnityPackage),
+	/// An user ID
+	User(User),
+	/// A world ID
+	World(World),
 }
 
 impl AsRef<str> for Any {
@@ -153,10 +156,11 @@ impl AsRef<str> for Any {
 	fn as_ref(&self) -> &str {
 		match self {
 			Self::Avatar(v) => v.as_ref(),
-			Self::User(v) => v.as_ref(),
+			Self::Group(v) => v.as_ref(),
 			Self::Instance(v) => v.as_ref(),
-			Self::World(v) => v.as_ref(),
 			Self::UnityPackage(v) => v.as_ref(),
+			Self::User(v) => v.as_ref(),
+			Self::World(v) => v.as_ref(),
 		}
 	}
 }

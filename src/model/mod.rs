@@ -10,6 +10,8 @@ mod assets;
 pub use assets::*;
 mod auth;
 pub use auth::*;
+mod groups;
+pub use groups::*;
 mod instances;
 pub use instances::*;
 mod notifications;
