@@ -37,16 +37,17 @@ impl Queryable<Authentication, crate::model::GroupAuditLogs>
 
 		let mut params = Vec::new();
 		if let Some(n) = self.n {
-			params.push(format!("n={}", n));
+			params.push(format!("n={n}"));
 		}
 
 		if let Some(offset) = self.offset {
-			params.push(format!("offset={}", offset));
+			params.push(format!("offset={offset}"));
 		}
 
-		let full_query = match params.len() {
-			0 => base_query,
-			_ => format!("{}?{}", base_query, params.join("&")),
+		let full_query = if params.len() == 0 {
+			base_query
+		} else {
+			format!("{}?{}", base_query, params.join("&"))
 		};
 
 		full_query
