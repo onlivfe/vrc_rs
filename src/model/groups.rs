@@ -87,50 +87,30 @@ pub struct GroupAuditLog {
 	/// The description of the event captured in the audit log.
 	pub description: String,
 	/// Additional data associated with the audit log entry.
-	pub data: Data,
+	pub data: GroupAuditLogData,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Represents additional data associated with a group audit log entry.
-pub struct Data {
+pub struct GroupAuditLogData {
 	/// The description change associated with the audit log entry.
 	#[serde(default, with = "either::serde_untagged_optional")]
-	pub description: Option<Either<DescriptionChange, String>>,
+	pub description: Option<Either<GroupAuditLogDataChange, String>>,
 	/// The join state change associated with the audit log entry.
 	#[serde(default, with = "either::serde_untagged_optional")]
-	pub join_state: Option<Either<JoinStateChange, String>>,
+	pub join_state: Option<Either<GroupAuditLogDataChange, String>>,
 	/// The order change associated with the audit log entry.
 	#[serde(default, with = "either::serde_untagged_optional")]
-	pub order: Option<Either<OrderChange, u32>>,
+	pub order: Option<Either<GroupAuditLogDataChange, u32>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-/// Represents a change in description associated with a group audit log entry.
-pub struct DescriptionChange {
-	/// The old description before the change.
+/// Represents a change in field associated with a group audit log entry.
+pub struct GroupAuditLogDataChange {
+	/// The old field before the change.
 	pub old: String,
-	/// The new description after the change.
+	/// The new field after the change.
 	pub new: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-/// Represents a change in join state associated with a group audit log entry.
-pub struct JoinStateChange {
-	/// The old join state before the change.
-	pub old: String,
-	/// The new join state after the change.
-	pub new: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-/// Represents a change in order associated with a group audit log entry.
-pub struct OrderChange {
-	/// The old order before the change.
-	pub old: u32,
-	/// The new order after the change.
-	pub new: u32,
 }

@@ -25,7 +25,7 @@ There's quite a bit missing, PRs are welcome to improve the situation, even beyo
 | None | Favorites | Eventual implementation |
 | None | Files | None |
 | Partial | Friends | Implementation soon |
-| None | Groups | None, at least in the near term |
+| Partial | Groups | More testing |
 | None | Invites | Listing invites only |
 | Partial | Instances | Implementation soon |
 | None | Notifications | Eventual implementation |

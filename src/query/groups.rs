@@ -32,19 +32,23 @@ impl Queryable<Authentication, crate::model::GroupAuditLogs>
 	for GroupAuditLogs
 {
 	fn url(&self, _: &Authentication) -> String {
-		let mut query =
-			format!("{}/groups/{}/auditLogs?", crate::API_BASE_URI, self.id.as_ref());
+		let base_query =
+			format!("{}/groups/{}/auditLogs", crate::API_BASE_URI, self.id.as_ref());
 
+		let mut params = Vec::new();
 		if let Some(n) = self.n {
-			let param = format!("&n={n}");
-			query.push_str(&param);
+			params.push(format!("n={}", n));
 		}
 
 		if let Some(offset) = self.offset {
-			let param = format!("&offset={offset}");
-			query.push_str(&param);
+			params.push(format!("offset={}", offset));
 		}
 
-		query
+		let full_query = match params.len() {
+			0 => base_query,
+			_ => format!("{}?{}", base_query, params.join("&")),
+		};
+
+		full_query
 	}
 }

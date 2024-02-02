@@ -19,6 +19,8 @@ pub struct TestConfig {
 	pub friend_id: Option<vrc::id::User>,
 	pub self_id: Option<vrc::id::User>,
 	pub world_id: Option<vrc::id::World>,
+	pub group_id: Option<vrc::id::Group>,
+	pub moderating_group_id: Option<vrc::id::Group>,
 }
 
 pub static TEST_CONFIG: Lazy<TestConfig> = Lazy::new(|| {
