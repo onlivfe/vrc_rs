@@ -23,7 +23,7 @@ pub struct GroupAuditLogs {
 	pub id: crate::id::Group,
 	/// The count of how many logs to get (1 - 100)
 	pub n: Option<u8>,
-	/// The offset of how many ogs to get
+	/// The offset of how many logs to get
 	pub offset: Option<usize>,
 	// TODO: startDate & endDate
 }

@@ -37,7 +37,7 @@ pub struct Group {
 	pub languages: Vec<String>,
 	/// The count of members in the group.
 	pub member_count: i64,
-	/// The timestamp when the member count was last synchronized.
+	/// The times tamp when the member count was last synchronized.
 	pub member_count_synced_at: String,
 	/// Indicates whether the group is verified.
 	pub is_verified: bool,
@@ -45,7 +45,7 @@ pub struct Group {
 	pub join_state: String,
 	// pub tags: Vec<Value>,
 	// pub galleries: Vec<Value>,
-	/// The timestamp when the group was created.
+	/// The time stamp when the group was created.
 	pub created_at: String,
 	/// The count of online members in the group.
 	pub online_member_count: i64,
@@ -71,7 +71,7 @@ pub struct GroupAuditLogs {
 pub struct GroupAuditLog {
 	/// The unique identifier for the audit log entry.
 	pub id: String,
-	/// The timestamp when the audit log entry was created.
+	/// The time stamp when the audit log entry was created.
 	#[serde(rename = "created_at")]
 	pub created_at: String,
 	/// The unique identifier of the group associated with the audit log.
