@@ -44,12 +44,10 @@ impl Queryable<Authentication, crate::model::GroupAuditLogs>
 			params.push(format!("offset={offset}"));
 		}
 
-		let full_query = if params.len() == 0 {
+		if params.is_empty() {
 			base_query
 		} else {
 			format!("{}?{}", base_query, params.join("&"))
-		};
-
-		full_query
+		}
 	}
 }
