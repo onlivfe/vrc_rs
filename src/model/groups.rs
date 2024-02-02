@@ -1,6 +1,8 @@
 use either::Either;
 use serde::{Deserialize, Serialize};
 
+use crate::id::User;
+
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Details about a VRC group
@@ -75,11 +77,11 @@ pub struct GroupAuditLog {
 	/// The unique identifier of the group associated with the audit log.
 	pub group_id: String,
 	/// The unique identifier of the actor who performed the action.
-	pub actor_id: String,
+	pub actor_id: User,
 	/// The display name of the actor.
 	pub actor_displayname: Option<String>,
 	/// The unique identifier of the target of the action.
-	pub target_id: Option<String>,
+	pub target_id: Option<User>,
 	/// The type of event captured in the audit log.
 	pub event_type: String,
 	/// The description of the event captured in the audit log.
