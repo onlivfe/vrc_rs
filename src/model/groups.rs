@@ -96,21 +96,21 @@ pub struct GroupAuditLog {
 pub struct GroupAuditLogData {
 	/// The description change associated with the audit log entry.
 	#[serde(default, with = "either::serde_untagged_optional")]
-	pub description: Option<Either<GroupAuditLogDataChange, String>>,
+	pub description: Option<Either<GroupAuditLogDataChange<String>, String>>,
 	/// The join state change associated with the audit log entry.
 	#[serde(default, with = "either::serde_untagged_optional")]
-	pub join_state: Option<Either<GroupAuditLogDataChange, String>>,
+	pub join_state: Option<Either<GroupAuditLogDataChange<String>, String>>,
 	/// The order change associated with the audit log entry.
 	#[serde(default, with = "either::serde_untagged_optional")]
-	pub order: Option<Either<GroupAuditLogDataChange, u32>>,
+	pub order: Option<Either<GroupAuditLogDataChange<u32>, u32>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Represents a change in field associated with a group audit log entry.
-pub struct GroupAuditLogDataChange {
+pub struct GroupAuditLogDataChange<T> {
 	/// The old field before the change.
-	pub old: String,
+	pub old: T,
 	/// The new field after the change.
-	pub new: String,
+	pub new: T,
 }
