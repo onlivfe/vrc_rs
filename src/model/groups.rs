@@ -60,7 +60,7 @@ pub struct GroupAuditLogs {
 	/// The list of group audit logs.
 	pub results: Vec<GroupAuditLog>,
 	/// The total count of audit logs.
-	pub total_count: usize,
+	pub total_count: u32,
 	/// Indicates whether there are more audit logs.
 	pub has_next: bool,
 }
