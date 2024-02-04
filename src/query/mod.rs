@@ -9,6 +9,8 @@ mod auth;
 pub use auth::*;
 mod friends;
 pub use friends::*;
+mod groups;
+pub use groups::*;
 mod instances;
 pub use instances::*;
 mod users;

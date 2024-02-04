@@ -1,3 +1,4 @@
+use either::Either;
 use serde::{Deserialize, Serialize};
 use time::{serde::rfc3339, OffsetDateTime};
 use url::Url;
@@ -280,7 +281,7 @@ pub struct CurrentAccountData {
 	pub obfuscated_pending_email: String,
 	/// Can be empty
 	#[serde(default)]
-	pub past_display_names: Vec<PastDisplayName>,
+	pub past_display_names: Vec<Either<PastDisplayName, String>>,
 	/// If hasn't set status yet
 	pub status_first_time: bool,
 	/// History of statuses (VRC pre-populates some for new accounts)
