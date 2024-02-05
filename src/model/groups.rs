@@ -1,5 +1,6 @@
 use either::Either;
 use serde::{Deserialize, Serialize};
+use time::{serde::rfc3339, OffsetDateTime};
 
 use crate::id::User;
 
@@ -72,8 +73,8 @@ pub struct GroupAuditLog {
 	/// The unique identifier for the audit log entry.
 	pub id: String,
 	/// The time stamp when the audit log entry was created.
-	#[serde(rename = "created_at")]
-	pub created_at: String,
+	#[serde(rename = "created_at", with = "rfc3339")]
+	pub created_at: OffsetDateTime,
 	/// The unique identifier of the group associated with the audit log.
 	pub group_id: String,
 	/// The unique identifier of the actor who performed the action.
