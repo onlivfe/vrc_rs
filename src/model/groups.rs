@@ -1,5 +1,6 @@
 use either::Either;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use time::{serde::rfc3339, OffsetDateTime};
 
 use crate::id::User;
@@ -114,4 +115,41 @@ pub struct GroupAuditLogDataChange<T> {
 	pub old: T,
 	/// The new field after the change.
 	pub new: T,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+/// Details about a group (un)ban.
+pub struct GroupBan {
+	/// Unique identifier of the (un)ban.
+	pub id: String,
+	/// Identifier of the group.
+	pub group_id: crate::id::Group,
+	/// Identifier of the user who was (un)banned.
+	pub user_id: crate::id::User,
+	/// Flag indicating if the user was representing the group at the time of
+	/// (un)ban.
+	pub is_representing: bool,
+	/// List of role identifiers the user had in the group.
+	pub role_ids: Vec<Value>,
+	/// List of managed role identifiers the user had in the group.
+	pub m_role_ids: Vec<Value>,
+	/// Timestamp of when the user joined.
+	pub joined_at: Option<String>,
+	/// Status of the user's membership in the group at the time of (un)ban.
+	pub membership_status: String,
+	/// Visibility status of the user in the group.
+	pub visibility: String,
+	/// Flag indicating if the user was subscribed to group announcements.
+	pub is_subscribed_to_announcements: bool,
+	/// Timestamp of the last post read by the user in the group.
+	pub last_post_read_at: Option<Value>,
+	/// Timestamp when the user joined the group.
+	pub created_at: String,
+	/// Timestamp when the user was (un)banned from the group.
+	pub banned_at: Option<String>,
+	/// Notes added by the group manager regarding the ban.
+	pub manager_notes: String,
+	/// Flag indicating if the user joined the group from a purchase.
+	pub has_joined_from_purchase: bool,
 }

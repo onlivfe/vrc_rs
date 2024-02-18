@@ -198,6 +198,7 @@ pub struct AccountData {
 	/// Defaults to an empty string if missing
 	pub bio: String,
 	/// Links that the user has added about themselves
+	#[serde(default)] //
 	pub bio_links: Vec<String>,
 	/// The avatar's image, for profile picture see the [profile pic
 	/// override](Self::profile_pic_override)
