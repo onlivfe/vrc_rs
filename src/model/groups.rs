@@ -5,7 +5,7 @@ use time::{serde::rfc3339, OffsetDateTime};
 
 use crate::id::User;
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Details about a VRC group
 pub struct Group {
@@ -55,7 +55,7 @@ pub struct Group {
 	pub membership_status: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Represents a collection of group audit logs.
 pub struct GroupAuditLogs {
@@ -67,7 +67,7 @@ pub struct GroupAuditLogs {
 	pub has_next: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Represents a single group audit log entry.
 pub struct GroupAuditLog {
@@ -92,7 +92,7 @@ pub struct GroupAuditLog {
 	pub data: GroupAuditLogData,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Represents additional data associated with a group audit log entry.
 pub struct GroupAuditLogData {
@@ -107,7 +107,7 @@ pub struct GroupAuditLogData {
 	pub order: Option<Either<GroupAuditLogDataChange<u32>, u32>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Represents a change in field associated with a group audit log entry.
 pub struct GroupAuditLogDataChange<T> {
@@ -117,7 +117,7 @@ pub struct GroupAuditLogDataChange<T> {
 	pub new: T,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 /// Details about a group (un)ban.
 pub struct GroupBan {
