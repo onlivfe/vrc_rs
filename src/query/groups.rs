@@ -102,3 +102,23 @@ impl Queryable<Authentication, crate::model::GroupBan> for GroupUnban {
 		racal::RequestMethod::Delete
 	}
 }
+
+/// Returns a LimitedGroup Member.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
+pub struct GroupMember {
+	/// The ID of the group
+	pub group_id: crate::id::Group,
+	/// The ID of the user
+	pub user_id: crate::id::User,
+}
+
+impl Queryable<Authentication, Option<crate::model::GroupMember>> for GroupMember {
+	fn url(&self, _: &Authentication) -> String {
+		format!(
+			"{}/groups/{}/members/{}",
+			crate::API_BASE_URI,
+			self.group_id.as_ref(),
+			self.user_id.as_ref()
+		)
+	}
+}

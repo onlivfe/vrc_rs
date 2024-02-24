@@ -153,3 +153,41 @@ pub struct GroupBan {
 	/// Flag indicating if the user joined the group from a purchase.
 	pub has_joined_from_purchase: bool,
 }
+
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+/// Details about a group member.
+pub struct GroupMember {
+	/// Unique identifier for the group member
+	pub id: String,
+	/// Identifier for the group
+	pub group_id: String,
+	/// Identifier for the user
+	pub user_id: String,
+	/// This field indicates whether the user is representing the group or not
+	pub is_representing: bool,
+	/// List of role identifiers associated with the user in the group
+	pub role_ids: Vec<String>,
+	/// List of manager role identifiers associated with the user in the group
+	pub m_role_ids: Vec<String>,
+	/// The date and time when the user joined the group
+	pub joined_at: Option<String>,
+	/// The status of the user's membership in the group
+	pub membership_status: String,
+	/// The visibility status of the user in the group
+	pub visibility: String,
+	/// This field indicates whether the user is subscribed to group
+	/// announcements or not
+	pub is_subscribed_to_announcements: bool,
+	/// The date and time of the last post read by the user
+	pub last_post_read_at: Option<String>,
+	/// The date and time when the group member was created
+	pub created_at: String,
+	/// The date and time when the user was banned from the group, if applicable
+	pub banned_at: Option<String>,
+	/// Notes made by the manager about the user
+	pub manager_notes: String,
+	/// This field indicates whether the user has joined the group from a
+	/// purchase or not
+	pub has_joined_from_purchase: bool,
+}
