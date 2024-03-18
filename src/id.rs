@@ -47,11 +47,26 @@ macro_rules! add_id {
 			}
 		}
 
+		/// Fallible: "...".parse::<id::Type>()
 		impl std::str::FromStr for $name {
 			type Err = &'static str;
 
-			fn from_str(v: &str) -> Result<Self, Self::Err> {
-				Ok(Self(v.to_owned()))
+			fn from_str(id: &str) -> Result<Self, Self::Err> {
+				Ok(Self(id.to_owned()))
+			}
+		}
+
+		/// Infallible: id::Type::from("...") or "...".into()
+		impl From<&str> for $name {
+			fn from(id: &str) -> Self {
+				Self(id.to_owned())
+			}
+		}
+
+		/// Infallible: id::Type::from(String) or String.into()
+		impl From<String> for $name {
+			fn from(id: String) -> Self {
+				Self(id)
 			}
 		}
 
