@@ -198,9 +198,9 @@ pub struct WorldInstance {
 }
 
 impl fmt::Display for WorldInstance {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}:{}", self.world.as_ref(), self.instance.as_ref())
-    }
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		write!(f, "{}:{}", self.world.as_ref(), self.instance.as_ref())
+	}
 }
 
 impl Serialize for WorldInstance {
