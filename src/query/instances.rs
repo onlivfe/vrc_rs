@@ -12,6 +12,6 @@ pub struct Instance {
 
 impl Queryable<Authentication, crate::model::Instance> for Instance {
 	fn url(&self, _: &Authentication) -> String {
-		format!("{}/instances/{}", crate::API_BASE_URI, self.id.to_string())
+		format!("{}/instances/{}", crate::API_BASE_URI, self.id)
 	}
 }

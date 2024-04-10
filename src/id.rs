@@ -58,14 +58,14 @@ macro_rules! add_id {
 			}
 		}
 
-		/// Infallible: `id::Type::from`("...") or "...".`into()``
+		/// Infallible: `id::Type::from`("...") or "...".`into()`
 		impl From<&str> for $name {
 			fn from(id: &str) -> Self {
 				Self(id.to_owned())
 			}
 		}
 
-		/// Infallible: `id::Type::from`(String) or String.`into()``
+		/// Infallible: `id::Type::from`(String) or String.`into()`
 		impl From<String> for $name {
 			fn from(id: String) -> Self {
 				Self(id)
