@@ -9,6 +9,8 @@
 //! assert!(user_id != record_id, "can't compare different types of IDs")
 //! ```
 
+use std::fmt;
+
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize, Serializer};
 
 // TODO: serialization & deserilization customizations
@@ -47,7 +49,7 @@ macro_rules! add_id {
 			}
 		}
 
-		/// Fallible: "...".parse::<id::Type>()
+		/// Fallible: "...".`parse::`<id::Type>()
 		impl std::str::FromStr for $name {
 			type Err = &'static str;
 
@@ -56,14 +58,14 @@ macro_rules! add_id {
 			}
 		}
 
-		/// Infallible: id::Type::from("...") or "...".into()
+		/// Infallible: `id::Type::from`("...") or "...".`into()``
 		impl From<&str> for $name {
 			fn from(id: &str) -> Self {
 				Self(id.to_owned())
 			}
 		}
 
-		/// Infallible: id::Type::from(String) or String.into()
+		/// Infallible: `id::Type::from`(String) or String.`into()``
 		impl From<String> for $name {
 			fn from(id: String) -> Self {
 				Self(id)
@@ -195,10 +197,10 @@ pub struct WorldInstance {
 	pub world: World,
 }
 
-impl ToString for WorldInstance {
-	fn to_string(&self) -> String {
-		format!("{}:{}", self.world.as_ref(), &self.instance.as_ref())
-	}
+impl fmt::Display for WorldInstance {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}:{}", self.world.as_ref(), self.instance.as_ref())
+    }
 }
 
 impl Serialize for WorldInstance {

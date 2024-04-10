@@ -76,7 +76,7 @@ pub struct WorldData {
 	pub organization: String,
 	/// How popular the world is
 	pub popularity: u32,
-	/// A YouTube ID that's supposed to be used for a preview of the world
+	/// A `YouTube` ID that's supposed to be used for a preview of the world
 	///
 	/// Many creators seem to use random videos here though
 	// If fails, need serde_with none on null
