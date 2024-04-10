@@ -79,12 +79,12 @@ impl Queryable<Authentication, crate::model::GroupBan> for GroupBan {
 	}
 }
 
-/// Unbans a user from a Group.
+/// Un-bans a user from a Group.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct GroupUnban {
 	/// The ID of the group
 	pub group_id: crate::id::Group,
-	/// The ID of the user to unban
+	/// The ID of the user to un-ban
 	pub user_id: crate::id::User,
 }
 
@@ -103,7 +103,7 @@ impl Queryable<Authentication, crate::model::GroupBan> for GroupUnban {
 	}
 }
 
-/// Returns a LimitedGroup Member.
+/// Returns a Limited Group Member.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct GroupMember {
 	/// The ID of the group
@@ -112,7 +112,9 @@ pub struct GroupMember {
 	pub user_id: crate::id::User,
 }
 
-impl Queryable<Authentication, Option<crate::model::GroupMember>> for GroupMember {
+impl Queryable<Authentication, Option<crate::model::GroupMember>>
+	for GroupMember
+{
 	fn url(&self, _: &Authentication) -> String {
 		format!(
 			"{}/groups/{}/members/{}",

@@ -21,7 +21,7 @@ impl Queryable<Authentication, crate::model::AnyUser> for User {
 	Clone, Debug, Default, Deserialize, Eq, Hash, PartialEq, Serialize,
 )]
 pub struct SearchUser {
-	/// Searches by displayName. Will return empty array if search query is empty
+	/// Searches by display name. Will return empty array if search query is empty
 	/// or missing.
 	pub search: String,
 	/// The number of objects to return.
