@@ -127,7 +127,8 @@ pub struct GroupBan {
 	pub group_id: crate::id::Group,
 	/// Identifier of the user who was un-banned.
 	pub user_id: crate::id::User,
-	/// Flag indicating if the user was representing the group at the time of un-ban.
+	/// Flag indicating if the user was representing the group at the time of
+	/// un-ban.
 	pub is_representing: bool,
 	/// List of role identifiers the user had in the group.
 	pub role_ids: Vec<Value>,
