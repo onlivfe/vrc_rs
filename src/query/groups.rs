@@ -1,7 +1,7 @@
 use racal::Queryable;
 use serde::{Deserialize, Serialize};
 
-use super::Authentication;
+use super::{Authentication, Pagination};
 
 /// Gets information about a specific group
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
@@ -21,34 +21,42 @@ impl Queryable<Authentication, crate::model::Group> for Group {
 pub struct GroupAuditLogs {
 	/// The ID of the group to get audit logs from
 	pub id: crate::id::Group,
-	/// The count of how many logs to get (1 - 100)
-	pub n: Option<u8>,
-	/// The offset of how many logs to get
-	pub offset: Option<usize>,
-	// TODO: startDate & endDate
+	/// Limits how many results are returned
+	#[serde(flatten)]
+	pub pagination: Pagination,
 }
 
 impl Queryable<Authentication, crate::model::GroupAuditLogs>
 	for GroupAuditLogs
 {
 	fn url(&self, _: &Authentication) -> String {
-		let base_query =
-			format!("{}/groups/{}/auditLogs", crate::API_BASE_URI, self.id.as_ref());
+		format!(
+			"{}/groups/{}/auditLogs?{}",
+			crate::API_BASE_URI,
+			self.id.as_ref(),
+			self.pagination.to_query_str()
+		)
+	}
+}
 
-		let mut params = Vec::new();
-		if let Some(n) = self.n {
-			params.push(format!("n={n}"));
-		}
+/// Gets the bans from a group
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
+pub struct GroupBans {
+	/// The ID of the group
+	pub id: crate::id::Group,
+	/// Limits how many results are returned
+	#[serde(flatten)]
+	pub pagination: Pagination,
+}
 
-		if let Some(offset) = self.offset {
-			params.push(format!("offset={offset}"));
-		}
-
-		if params.is_empty() {
-			base_query
-		} else {
-			format!("{}?{}", base_query, params.join("&"))
-		}
+impl Queryable<Authentication, Vec<crate::model::GroupBan>> for GroupBans {
+	fn url(&self, _: &Authentication) -> String {
+		format!(
+			"{}/groups/{}/bans?{}",
+			crate::API_BASE_URI,
+			self.id.as_ref(),
+			self.pagination.to_query_str()
+		)
 	}
 }
 

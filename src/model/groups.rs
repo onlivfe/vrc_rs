@@ -119,16 +119,16 @@ pub struct GroupAuditLogDataChange<T> {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
-/// Details about a group un-ban.
+/// Details about a group ban/un-ban.
 pub struct GroupBan {
-	/// Unique identifier of the un-ban.
+	/// Unique identifier of the ban.
 	pub id: String,
 	/// Identifier of the group.
 	pub group_id: crate::id::Group,
-	/// Identifier of the user who was un-banned.
+	/// Identifier of the user who was banned.
 	pub user_id: crate::id::User,
 	/// Flag indicating if the user was representing the group at the time of
-	/// un-ban.
+	/// ban.
 	pub is_representing: bool,
 	/// List of role identifiers the user had in the group.
 	pub role_ids: Vec<Value>,
@@ -136,7 +136,7 @@ pub struct GroupBan {
 	pub m_role_ids: Vec<Value>,
 	/// Time of when the user joined.
 	pub joined_at: Option<String>,
-	/// Status of the user's membership in the group at the time of un-ban.
+	/// Status of the user's membership in the group at the time of ban.
 	pub membership_status: String,
 	/// Visibility status of the user in the group.
 	pub visibility: String,
@@ -146,7 +146,7 @@ pub struct GroupBan {
 	pub last_post_read_at: Option<Value>,
 	/// Time when the user joined the group.
 	pub created_at: String,
-	/// Time when the user was un-banned from the group.
+	/// Time when the user was banned from the group.
 	pub banned_at: Option<String>,
 	/// Notes added by the group manager regarding the ban.
 	pub manager_notes: String,
