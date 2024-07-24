@@ -30,6 +30,28 @@ async fn user_tupper() -> Result<(), ApiError> {
 
 #[tokio::test]
 #[ignore]
+async fn user_old_id() -> Result<(), ApiError> {
+	let api_client = common::api_client()?;
+
+	let query = vrc::query::User { id: "qYZJsbJRqA".parse().unwrap() };
+	let user: vrc::model::AnyUser = api_client.query(query).await?;
+
+	dbg!(&user);
+
+	let user = user.into_user();
+
+	assert!(
+		user
+			.base
+			.tags
+			.contains(&"system_haha_you_have_to_document_this_one_too".to_string())
+	);
+
+	Ok(())
+}
+
+#[tokio::test]
+#[ignore]
 async fn user_system() -> Result<(), ApiError> {
 	let api_client = common::api_client()?;
 

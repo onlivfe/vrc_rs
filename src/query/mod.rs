@@ -19,7 +19,7 @@ mod worlds;
 pub use worlds::*;
 
 #[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-/// [`racal::Queryable`](racal::Queryable)'s `RequiredApiState`.
+/// [`racal::Queryable`]'s `RequiredApiState`.
 ///
 /// Even unauthenticated requests to VRC's API should take rate limits
 /// into account, thus not using `()` for the API state.
@@ -44,7 +44,7 @@ impl racal::FromApiState<Self> for Authenticating {
 }
 
 #[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-/// [`racal::Queryable`](racal::Queryable)'s `RequiredApiState`.
+/// [`racal::Queryable`]'s `RequiredApiState`.
 ///
 /// With authentication
 pub struct Authentication {

@@ -17,7 +17,7 @@ async fn active_instance() -> Result<(), ApiError> {
 	let active_worlds: Vec<WorldListing> = api_client.query(query).await?;
 	let world = active_worlds.first().expect("there to be an active world");
 	let query = vrc::query::World { id: world.base.id.clone() };
-	let world: World = api_client.query(query).await?;
+	let world: World = dbg!(api_client.query(query).await?);
 	let instance =
 		world.instances.first().expect("there to be an active instance");
 	let id = vrc::id::WorldInstance {

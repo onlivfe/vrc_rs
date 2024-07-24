@@ -2,7 +2,7 @@
 
 use vrc::{
 	api_client::{ApiClient, ApiError},
-	model::{Group, GroupAuditLogs, GroupBan},
+	model::{Group, GroupAuditLogs, GroupBan, GroupMember},
 	query::Pagination,
 };
 
@@ -25,6 +25,46 @@ async fn group() -> Result<(), ApiError> {
 	let group: Group = api_client.query(query).await?;
 
 	dbg!(&group);
+
+	Ok(())
+}
+
+#[tokio::test]
+#[ignore]
+async fn group_member() -> Result<(), ApiError> {
+	let group_id = match &common::TEST_CONFIG.group_id {
+		Some(v) => v,
+		None => {
+			println!(
+				"Skipping test {} due to lack of group id",
+				stringify!(group_member)
+			);
+			return Ok(());
+		}
+	};
+
+	let user_id = match &common::TEST_CONFIG.self_id {
+		Some(v) => v,
+		None => {
+			println!(
+				"Skipping test {} due to lack of self id",
+				stringify!(group_member)
+			);
+			return Ok(());
+		}
+	};
+
+	let api_client = common::api_client()?;
+
+	let query = vrc::query::GroupMember {
+		user_id: user_id.clone(),
+		group_id: group_id.clone(),
+	};
+	let group_member: GroupMember = api_client.query(query).await?;
+
+	dbg!(&group_member);
+
+	assert_eq!(&group_member.user_id, user_id);
 
 	Ok(())
 }
