@@ -15,7 +15,7 @@ If you're looking for a more mature project, please consider looking at their [g
 
 I disliked the generated nature of it though, and wanted more strong Rust-like things for some things, which is why this crate exists.
 
-There's quite a bit missing, PRs are welcome to improve the situation, even beyond the plans:
+There's quite a bit missing, if you want to help with that, see [contributing](#contributing).
 
 | Status | Category | Planned |
 | --- | --- | --- |
@@ -25,7 +25,7 @@ There's quite a bit missing, PRs are welcome to improve the situation, even beyo
 | None | Favorites | Eventual implementation |
 | None | Files | None |
 | Partial | Friends | Implementation soon |
-| Partial | Groups | More testing |
+| Partial | Groups | More testing (requires VRC+ :/ ) |
 | None | Invites | Listing invites only |
 | Partial | Instances | Implementation soon |
 | None | Notifications | Eventual implementation |
@@ -71,6 +71,23 @@ cargo test --all-features current_user -- --exact --ignored --nocapture
 # All tests
 cargo test --all-features -- --ignored
 ```
+
+## Contributing
+
+### Coding
+
+This crate aims to be of higher quality vs quantity.
+This means that the bar for what gets merged is maybe higher than some want to bother with.
+Please run the clippy checks along with nightly cargo formatting, and check that the CI checks pass.
+
+Any contributions are welcome though, just mark the PR as editable by maintainers.
+That way even if you don't feel like acting out on the feedback, the improvements will most likely eventually find their way back to here.
+
+### Other
+
+Alternatively if you don't feel like coding, creating GitHub issues for wrong behavior would be very welcome.
+Additionally, figuring out the actual data types and inheritance models, and improving the docs would really help with development!
+Also just starring this GitHub repository helps with motivation for more work on this crate that serves other projects as well.
 
 ## License
 
