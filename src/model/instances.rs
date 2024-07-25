@@ -85,7 +85,8 @@ pub struct Instance {
 	/// The name of the instance
 	pub name: String,
 	/// The ID of the instance's owner
-	pub owner_id: Option<crate::id::User>,
+	#[serde(with = "either::serde_untagged_optional")]
+	pub owner_id: Option<either::Either<crate::id::User, crate::id::Group>>,
 	/// If the instance is supposedly permanent
 	pub permanent: bool,
 	/// Apparently the photon region can theoretically be different than the

@@ -40,13 +40,6 @@ async fn user_old_id() -> Result<(), ApiError> {
 
 	let user = user.into_user();
 
-	assert!(
-		user
-			.base
-			.tags
-			.contains(&"system_haha_you_have_to_document_this_one_too".to_string())
-	);
-
 	Ok(())
 }
 

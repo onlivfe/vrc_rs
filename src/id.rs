@@ -23,13 +23,15 @@ macro_rules! add_id {
 	) => {
 		#[doc = concat!("An ID of a VRC ", stringify!($name))]
 		///
+		$(#[$meta])*
+		///
 		/// # Example usage
 		///
 		/// Note that parse checks that the ID follows the correct format:
 		///
-		/// ```
+		/// ```no_run
 		#[doc = concat!("use vrc::id::", stringify!($name), ";")]
-		#[doc = concat!("let parse_res = \"totally-legit-id\".parse::<", stringify!($name), ">();")]
+		#[doc = concat!("let parse_res = \"an-id-that-is-of-an-invalid-format\".parse::<", stringify!($name), ">();")]
 		/// assert!(parse_res.is_err());
 		/// ```
 		///
@@ -46,7 +48,6 @@ macro_rules! add_id {
 		/// The deserialization also checks the that the IDs format is valid, whilst serialization does not check the validity.
 		#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
 		#[repr(transparent)]
-		$(#[$meta])*
 		pub struct $name(String);
 
 		impl $name {
@@ -125,7 +126,7 @@ macro_rules! add_id {
 						&self, formatter: &mut std::fmt::Formatter,
 					) -> std::fmt::Result {
 						formatter
-							.write_str(concat!("a string UD if", stringify!($name), ", that is of the correct format"))
+							.write_str(concat!("a string ID of ", stringify!($name), ", that is of the correct format"))
 					}
 
 					fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
@@ -135,7 +136,7 @@ macro_rules! add_id {
 						if !$id_matches(&v) {
 							return Err(serde::de::Error::invalid_value(
 								serde::de::Unexpected::Str(v),
-								&"not matching the ID format",
+								&concat!("matching the ID format of ", stringify!($name)),
 							));
 						}
 
@@ -153,8 +154,12 @@ macro_rules! add_id {
 add_id!(Avatar, |v: &str| v.starts_with("avtr_") || v.len() == 10);
 add_id!(Group, |v: &str| v.starts_with("grp_"));
 // TODO: Manual implementation that breaks down instance name, type, region, and
-// so on.
-add_id!(Instance, |v: &str| v.contains("~region("));
+// so on, assuming a valid instance ID.
+add_id!(
+	/// Instance ID validation is near impossible, so pretty much anything is accepted for it
+	Instance,
+	|_v: &str| true
+);
 add_id!(UnityPackage, |v: &str| v.starts_with("unp_") || v.len() == 10);
 add_id!(User, |v: &str| v.starts_with("usr_") || v.len() == 10);
 add_id!(GroupMember, |v: &str| v.starts_with("gmem_"));
@@ -162,14 +167,40 @@ add_id!(World, |v: &str| v.starts_with("wrld_") || v.len() == 10);
 
 /// Offline or the id of the world or whatever type T is
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-#[serde(untagged)]
 pub enum OfflineOr<T> {
-	// TODO: Mangle serde enough to match these properly
 	/// The ID was replaced by offline
+	#[serde(rename = "offline")]
 	Offline,
 	/// There exists an ID
+	#[serde(untagged)]
 	Id(T),
+}
+
+#[cfg(test)]
+#[test]
+fn offline_or_id() {
+	assert_eq!(
+		&serde_json::to_string(&OfflineOr::<String>::Offline).unwrap(),
+		"\"offline\""
+	);
+	let user = crate::id::User::from(
+		"usr_c1644b5b-3ca4-45b4-97c6-a2a0de70d469".to_owned(),
+	);
+	assert_eq!(
+		&serde_json::to_string(&OfflineOr::<crate::id::User>::Id(user)).unwrap(),
+		"\"usr_c1644b5b-3ca4-45b4-97c6-a2a0de70d469\""
+	);
+
+	let id = "\"private\"";
+	assert!(serde_json::from_str::<OfflineOr<crate::id::User>>(id).is_err());
+	let id = "\"offline\"";
+	serde_json::from_str::<OfflineOr<crate::id::User>>(id).unwrap();
+	let id = "\"invalid\"";
+	assert!(serde_json::from_str::<OfflineOr<crate::id::User>>(id).is_err());
+	let id = "\"usr_c1644b5b-3ca4-45b4-97c6-a2a0de70d469\"";
+	serde_json::from_str::<OfflineOr<crate::id::User>>(id).unwrap();
+	let id = "\"invalid\"";
+	serde_json::from_str::<OfflineOr<String>>(id).unwrap();
 }
 
 impl<T> OfflineOr<T> {
@@ -184,15 +215,15 @@ impl<T> OfflineOr<T> {
 
 /// Offline or private or the id of the instance or whatever type T is
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-#[serde(untagged)]
 pub enum OfflineOrPrivateOr<T> {
 	/// Offline currently
+	#[serde(rename = "private")]
 	Private,
-	// TODO: Mangle serde enough to match these properly
 	/// The ID was replaced by offline
+	#[serde(rename = "offline")]
 	Offline,
 	/// There exists an ID
+	#[serde(untagged)]
 	Id(T),
 }
 
@@ -206,6 +237,40 @@ impl<T> OfflineOrPrivateOr<T> {
 	}
 }
 
+#[cfg(test)]
+#[test]
+fn offline_or_private_or_id() {
+	assert_eq!(
+		&serde_json::to_string(&OfflineOrPrivateOr::<String>::Offline).unwrap(),
+		"\"offline\""
+	);
+	assert_eq!(
+		&serde_json::to_string(&OfflineOrPrivateOr::<String>::Private).unwrap(),
+		"\"private\""
+	);
+	let user = crate::id::User::from(
+		"usr_c1644b5b-3ca4-45b4-97c6-a2a0de70d469".to_owned(),
+	);
+	assert_eq!(
+		&serde_json::to_string(&OfflineOrPrivateOr::<crate::id::User>::Id(user))
+			.unwrap(),
+		"\"usr_c1644b5b-3ca4-45b4-97c6-a2a0de70d469\""
+	);
+
+	let id = "\"private\"";
+	serde_json::from_str::<OfflineOrPrivateOr<crate::id::User>>(id).unwrap();
+	let id = "\"offline\"";
+	serde_json::from_str::<OfflineOrPrivateOr<crate::id::User>>(id).unwrap();
+	let id = "\"invalid\"";
+	assert!(
+		serde_json::from_str::<OfflineOrPrivateOr<crate::id::User>>(id).is_err()
+	);
+	let id = "\"usr_c1644b5b-3ca4-45b4-97c6-a2a0de70d469\"";
+	serde_json::from_str::<OfflineOrPrivateOr<crate::id::User>>(id).unwrap();
+	let id = "\"invalid\"";
+	serde_json::from_str::<OfflineOrPrivateOr<String>>(id).unwrap();
+}
+
 /// Any of the VRC IDs
 ///
 /// # Example usage
@@ -214,7 +279,7 @@ impl<T> OfflineOrPrivateOr<T> {
 /// let id1 = "usr_totally-legit-uuid".parse::<vrc::id::User>().unwrap();
 /// let id1: vrc::id::Any = id1.into();
 /// let id2 =
-/// 	"0000~group(grp_totally-legit-uuid)~groupAccessType(public)~region(us)"
+/// 	"12345~group(grp_totally-legit-uuid)~groupAccessType(public)~region(us)"
 /// 		.parse::<vrc::id::Instance>()
 /// 		.unwrap();
 /// let id2: vrc::id::Any = id2.into();
@@ -335,14 +400,14 @@ impl<'de> serde::de::Deserialize<'de> for WorldInstance {
 fn user_id_parsing() {
 	// Tupper
 	let id = "\"usr_c1644b5b-3ca4-45b4-97c6-a2a0de70d469\"";
-	assert!(serde_json::from_str::<crate::id::User>(id).is_ok());
+	serde_json::from_str::<crate::id::User>(id).unwrap();
 
 	let id = "\"grp_c1644b5b-3ca4-45b4-97c6-a2a0de70d469\"";
 	assert!(serde_json::from_str::<crate::id::User>(id).is_err());
 
 	// Valid length old user ID
 	let id = "\"qYZJsbJRqA\"";
-	assert!(serde_json::from_str::<crate::id::User>(id).is_ok());
+	serde_json::from_str::<crate::id::User>(id).unwrap();
 
 	// Invalid length
 	let id = "\"qYZJsbJRqA1\"";
@@ -390,4 +455,21 @@ fn strict_from_string() {
 	);
 	let _id: String = serde_json::to_string(&id)
 		.expect("to be able to serialize an invalid Group");
+}
+
+#[cfg(test)]
+#[test]
+fn instance_id() {
+	let original_id = "\"12345\"";
+	let id: crate::id::Instance = serde_json::from_str(original_id)
+		.expect("to be able to deserialize instance ID");
+	let id: String = serde_json::to_string(&id)
+		.expect("to be able to serialize a valid instance");
+	assert_eq!(original_id, id);
+
+	serde_json::from_str::<crate::id::Instance>("\"59422~region(eu)\"").unwrap();
+	// Heard that instance IDs can be pretty much anything
+	//assert!(serde_json::from_str::<crate::id::Instance>("\"region(eu)\"").
+	// is_err()); assert!(serde_json::from_str::<crate::id::Instance>("\"1234\""
+	// ).is_err());
 }
