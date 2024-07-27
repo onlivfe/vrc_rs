@@ -107,7 +107,7 @@ impl racal::reqwest::ApiClient<Authentication> for AuthenticatedVRC {
 	{
 		let response = response.error_for_status()?;
 		let val = response.bytes().await?;
-		dbg!(std::str::from_utf8(&val)).ok();
+		//dbg!(std::str::from_utf8(&val)).ok();
 		Ok(queryable.deserialize(&val)?)
 	}
 }
@@ -359,7 +359,8 @@ impl UnauthenticatedVRC {
 		let auth: String = extract_cookie(response.headers(), "auth=")
 			.ok_or_else(|| serde_json::Error::custom("auth cookie is missing"))?;
 
-		let resp = self.handle_response::<LoginResponseOrCurrentUser, Authenticating, crate::query::GetCurrentUser>(queryable, response).await?;
+		let resp: LoginResponseOrCurrentUser =
+			self.handle_response(queryable, response).await?;
 
 		let resp = match resp {
 			LoginResponseOrCurrentUser::Login(login_resp) => login_resp,

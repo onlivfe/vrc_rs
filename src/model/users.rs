@@ -205,7 +205,7 @@ pub struct AccountData {
 	pub current_avatar_image_url: Url,
 	/// The current avatar tags or empty string.
 	#[serde(default)]
-	pub current_avatar_tags: Vec<serde_json::Value>,
+	pub current_avatar_tags: serde_json::Value,
 	/// The avatar's smaller image, for profile picture see the [profile pic
 	/// override](Self::profile_pic_override)
 	pub current_avatar_thumbnail_image_url: Url,
