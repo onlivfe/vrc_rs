@@ -84,8 +84,8 @@ pub struct GroupAuditLog {
 	/// The display name of the actor.
 	pub actor_displayname: Option<String>,
 	/// The unique identifier of the target of the action.
-	#[serde(with = "either::serde_untagged")]
-	pub target_id: Either<id::User, id::Instance>,
+	#[serde(with = "either::serde_untagged_optional")]
+	pub target_id: Option<Either<id::User, id::Instance>>,
 	/// The type of event captured in the audit log.
 	pub event_type: String,
 	/// The description of the event captured in the audit log.
