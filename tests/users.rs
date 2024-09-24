@@ -38,7 +38,7 @@ async fn user_old_id() -> Result<(), ApiError> {
 
 	dbg!(&user);
 
-	let user = user.into_user();
+	let _user = user.into_user();
 
 	Ok(())
 }
