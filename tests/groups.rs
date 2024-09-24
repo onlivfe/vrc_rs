@@ -60,7 +60,8 @@ async fn group_member() -> Result<(), ApiError> {
 		user_id: user_id.clone(),
 		group_id: group_id.clone(),
 	};
-	let group_member: GroupMember = api_client.query(query).await?;
+	let group_member: GroupMember =
+		api_client.query(query).await?.expect("Group to exist");
 
 	dbg!(&group_member);
 
