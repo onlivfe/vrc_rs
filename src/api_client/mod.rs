@@ -20,16 +20,16 @@
 use std::num::NonZeroU32;
 
 use governor::{
+	Quota,
+	RateLimiter,
 	clock::DefaultClock,
 	middleware::NoOpMiddleware,
 	state::{InMemoryState, NotKeyed},
-	Quota,
-	RateLimiter,
 };
-use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
+use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
 pub use racal::reqwest::{ApiClient, ApiError};
 use racal::{FromApiState, Queryable};
-use reqwest::{header::HeaderMap, Client, RequestBuilder, Response};
+use reqwest::{Client, RequestBuilder, Response, header::HeaderMap};
 use serde::de::DeserializeOwned;
 
 use crate::{

@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
-use time::{serde::rfc3339, OffsetDateTime};
+use time::{OffsetDateTime, serde::rfc3339};
 use url::Url;
 
 /// If a world has been released publicly for example

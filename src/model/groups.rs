@@ -1,7 +1,7 @@
 use either::Either;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use time::{serde::rfc3339, OffsetDateTime};
+use time::{OffsetDateTime, serde::rfc3339};
 
 use crate::id;
 

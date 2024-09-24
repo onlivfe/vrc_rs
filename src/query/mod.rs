@@ -58,13 +58,10 @@ impl std::fmt::Debug for Authentication {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		f.debug_struct("Authentication")
 			.field("token", &"*****")
-			.field(
-				"second_factor_token",
-				match &self.second_factor_token {
-					Some(_) => &"Some(*****)",
-					None => &"None",
-				},
-			)
+			.field("second_factor_token", match &self.second_factor_token {
+				Some(_) => &"Some(*****)",
+				None => &"None",
+			})
 			.finish()
 	}
 }
