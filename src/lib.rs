@@ -29,6 +29,8 @@
 #![allow(clippy::multiple_crate_versions)]
 // time macro causes warnings :/
 #![allow(clippy::redundant_pub_crate)]
+//time macro causes warnings :/
+#![allow(clippy::ref_option)]
 
 use serde::{Deserialize, Deserializer};
 

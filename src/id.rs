@@ -359,7 +359,7 @@ impl<'de> serde::de::Deserialize<'de> for WorldInstance {
 	{
 		struct IdVisitor;
 
-		impl<'de> Visitor<'de> for IdVisitor {
+		impl Visitor<'_> for IdVisitor {
 			type Value = WorldInstance;
 
 			fn expecting(
